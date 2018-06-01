@@ -5,9 +5,10 @@ export default {
 
     container: {
         flex: 1, 
-        marginTop:20,
+        marginTop:0,
         flexDirection: 'column',
-        width:'100%'
+        width:'100%',
+        backgroundColor:Colors.whiteColor
     },
 
     viewlogo:{
@@ -24,7 +25,7 @@ export default {
 
     viewSign:{
         margin:30,
-        alignItems:'center'
+        //alignItems:'center'
     },
     textSignin:{
         fontSize: 20,
@@ -43,13 +44,65 @@ export default {
     viewInput:{
         marginLeft:30,
         marginRight:30,
-        height:25,
+        height:35,
         justifyContent:'center',
         paddingLeft:8,
         backgroundColor: Colors.lightGrayColor
     },
+
     inputEmail:{
 
+    },
+
+    viewPass:{
+        marginLeft:30,
+        marginBottom:10,
+        marginTop:20,
+        
+    },
+    textPass:{
+        fontSize: 15,
+        fontWeight:'bold',
+        color: Colors.grayColor
+    },
+
+    viewForgot:{
+        marginBottom:10,
+        marginTop:10,
+        flexDirection:"row",
+        justifyContent:'center'
+    },
+    textForgot:{
+        fontSize:15,
+        color:Colors.blackColor
+    },
+    textReset:{
+        marginLeft:10,
+        fontSize:15,
+        color:Colors.redColor
+    },
+
+    viewCenter:{
+        marginTop:20,
+        alignItems:'center'
+    },
+
+    viewBtnSignin:{
+        
+        alignItems:'center',
+        justifyContent:'center',
+        height:40,
+        width:120,
+        backgroundColor:Colors.blueColor
+    },
+
+    btnSignin:{
+        justifyContent:'center',
+        fontSize:15,
+        fontWeight:'bold',
+        alignItems:'center',
+        
+        color:Colors.whiteColor
     }
     
 };

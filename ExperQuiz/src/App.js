@@ -9,11 +9,14 @@ import {
 } from 'react-native';
 
 import {LoginNav} from "./Router";
+import {Colors,Images} from '@theme';
 
 class App extends Component {
 
   componentDidMount() {
-    StatusBar.setHidden(true);
+      //StatusBar.setHidden(true);
+      StatusBar.setBarStyle("dark-content");
+      
   }
 
   render() {
