@@ -5,12 +5,13 @@
 import React, { Component } from 'react';
 import {
     Platform,
-    AsyncStorage
+    AsyncStorage,
 } from 'react-native';
 
 const API_ROOT = "http://backup.experquiz.com/mobile"
 const API_SIGNIN = API_ROOT + "/signin"
 const API_EVALUTION_LIST= API_ROOT + "/evals/"
+const mobileToken = "mobile_token"
 
 export async function getJSONwithCache(url, fromCached){
     if (fromCached) {
@@ -33,57 +34,53 @@ export async function getJSONwithCache(url, fromCached){
     }
 }
 
-export async function postJSONwithCache(url, json) {
+export async function postJSONwithFormData(url, formData) {
     
-    const cachedPostsKey = "cached_posts"
-    const cached = await AsyncStorage.getItem(cachedPostsKey)
-    let cachedPosts =  JSON.parse(cached)
-    let newCachedPosts = []
-
-    if(cachedPosts != null)
-        for (const cachedPost of cachedPosts) {
-            try {
-                await fetch(cachedPost.url, {
-                    method: 'POST',
-                    headers: {
-                        Accept: 'application/json',
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(cachedPost.json),
-                });
-            } catch (error) {
-                newCachedPosts.push(cachedPost)
-            }        
-        }
+    const mobileToken = "mobile_token"
 
     try {
         let response = await fetch(url, {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
-                'Content-Type': 'application/json',
+                'Content-Type': 'multipart/form-data',
             },
-            body: JSON.stringify(json),
+            body: formData,
         });
         let responseJson = await response.json() 
+        
+        if (responseJson.status = "ok") {
+            /// Save Token in app syncStorage
+            AsyncStorage.setItem(mobileToken, responseJson.status)
+        }
         console.log(responseJson)
         return responseJson
         
     } catch (error) {
         console.log("error", error)
-        var cachedPost = {}
-        cachedPost.url = url
-        cachedPost.json = json
-        newCachedPosts.push(cachedPost)        
     }
-    await AsyncStorage.setItem(cachedPostsKey, JSON.stringify(newCachedPosts))    
+
     return null        
 }
 
 export async function checkLogin(email,password, fromCached = false) {
-    var bindData = {
-        'email' : email,
-        'password': password
+    let formdata = new FormData();
+    formdata.append("email",email);
+    formdata.append("password",password);
+    return await postJSONwithFormData(API_SIGNIN, formdata)
+}
+
+export async function checkLoginToken(){
+
+    const myToken = await AsyncStorage.getItem(mobileToken)
+    if (!myToken || myToken != ""){
+        return ""
+    } else {
+        return myToken
     }
-    return await postJSONwithCache(API_SIGNIN, bindData)
+}
+
+export async function logOut(){
+
+    await AsyncStorage.setItem(mobileToken, "")
 }

@@ -13,9 +13,9 @@ import {
 
 import {Colors,Images} from '@theme';
 import Styles from './styles';
-
 import { Loader,Strings } from '@components';
-import {checkLogin} from "@api";
+import { checkLogin} from "@api";
+
 export default class Login extends Component {
 
     constructor(props) {
@@ -23,8 +23,8 @@ export default class Login extends Component {
 
         this.state = ({
             loaderVisible: false,
-            email:"",
-            password:""
+            email:"patrice@experquiz.com",
+            password:"Aebuu6ai"
         })
     }
 
@@ -52,34 +52,39 @@ export default class Login extends Component {
         let response = await checkLogin(this.state.email, this.state.password)
         this.setState({loaderVisible: false})
 
-        // if (response == null){
+        setTimeout(()=>{            
+            if (response == null){
 
-        //     Alert.alert(
-        //         'ExpertQuiz',
-        //         Strings.networkError,
-        //         [
-        //           {text: 'Yes',  onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
-        //         ],
-        //         { cancelable: true }
-        //     )
-        // } else {
-        //     if (response.status == "success") {
-                
-        //     } else {
-        //         Alert.alert(
-        //             'ExpertQuiz',
-        //             Strings.loginFailed,
-        //             [
-        //             {text: 'Yes',  onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
-        //             ],
-        //             { cancelable: true }
-        //         )
-        //     }
-        // }
+                Alert.alert(
+                    'ExpertQuiz',
+                    Strings.networkError,
+                    [
+                    {text: 'OK',  onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
+                    ],
+                    { cancelable: true }
+                )
+            } else {
+
+                if (response.status == "ok" && response.message==null) {
+                    
+                    this.props.navigation.navigate("EvallistMenu")
+
+                } else {
+
+                    Alert.alert(
+                        'ExpertQuiz',
+                        Strings.loginFailed,
+                        [
+                        {text: 'OK',  onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
+                        ],
+                        { cancelable: true }
+                    )
+                }
+            }
+        }, 200);
     }
 
     render() {
-        const {navigate} = this.props.navigation
 
         return (
             <View style={Styles.container}>
@@ -96,7 +101,7 @@ export default class Login extends Component {
                 </View>
 
                 <View style={Styles.viewInput}>
-                    <TextInput style={Styles.inputEmail} maxLength={50} onChangeText={(text)=> this.changeEmail(text)}></TextInput>
+                    <TextInput value={this.state.email} style={Styles.inputEmail} maxLength={50} onChangeText={(text)=> this.changeEmail(text)}></TextInput>
                 </View>
 
                 <View style={Styles.viewPass}>
@@ -104,7 +109,7 @@ export default class Login extends Component {
                 </View>
 
                 <View style={Styles.viewInput}>
-                    <TextInput style={Styles.inputPass} maxLength={30} onChangeText={(text)=> this.changePassword(text)} secureTextEntry={true} ></TextInput>
+                    <TextInput value={this.state.password} style={Styles.inputPass} maxLength={30} onChangeText={(text)=> this.changePassword(text)} secureTextEntry={true} ></TextInput>
                 </View>
                
                 <View style={Styles.viewForgot}>
