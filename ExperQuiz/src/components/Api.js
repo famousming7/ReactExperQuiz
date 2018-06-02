@@ -10,10 +10,12 @@ import {
 
 const API_ROOT = "http://backup.experquiz.com/mobile"
 const API_SIGNIN = API_ROOT + "/signin"
+const API_LOGOUT = API_ROOT + "/lotout/"
 const API_EVALUTION_LIST= API_ROOT + "/evals/"
 const mobileToken = "mobile_token"
+const key_evaluationList = "evaluation_list"
 
-export async function getJSONwithCache(url, fromCached){
+export async function getJSONwithCache(url, fromCached = false){
     if (fromCached) {
         const cached = await AsyncStorage.getItem(url)
         return JSON.parse(cached)                        
@@ -35,8 +37,6 @@ export async function getJSONwithCache(url, fromCached){
 }
 
 export async function postJSONwithFormData(url, formData) {
-    
-    const mobileToken = "mobile_token"
 
     try {
         let response = await fetch(url, {
@@ -51,7 +51,7 @@ export async function postJSONwithFormData(url, formData) {
         
         if (responseJson.status = "ok") {
             /// Save Token in app syncStorage
-            AsyncStorage.setItem(mobileToken, responseJson.status)
+            AsyncStorage.setItem(mobileToken, responseJson.mobile_token)
         }
         console.log(responseJson)
         return responseJson
@@ -64,6 +64,7 @@ export async function postJSONwithFormData(url, formData) {
 }
 
 export async function checkLogin(email,password, fromCached = false) {
+
     let formdata = new FormData();
     formdata.append("email",email);
     formdata.append("password",password);
@@ -73,7 +74,7 @@ export async function checkLogin(email,password, fromCached = false) {
 export async function checkLoginToken(){
 
     const myToken = await AsyncStorage.getItem(mobileToken)
-    if (!myToken || myToken != ""){
+    if (!myToken || myToken == ""){
         return ""
     } else {
         return myToken
@@ -82,5 +83,51 @@ export async function checkLoginToken(){
 
 export async function logOut(){
 
-    await AsyncStorage.setItem(mobileToken, "")
+    let myToken = await AsyncStorage.getItem(mobileToken);
+    let url = API_LOGOUT + myToken
+    await getJSONwithCache(url);
+    AsyncStorage.setItem(mobileToken, "")
+}
+
+export async function getEvalsListFromApi(){
+    
+    let myToken = await AsyncStorage.getItem(mobileToken);
+    if (!myToken || myToken == ""){
+        return []
+    } else {
+        
+        //let timeStamp = Date.now()
+        let timeStamp = "1527932622"
+        let url = API_EVALUTION_LIST + myToken + "/" + timeStamp
+        console.log(url)
+
+        let newItems = await getJSONwithCache(url);
+        let arrays =  await getEvalsArrayFrom(newItems)
+        console.log("questions",arrays)
+        AsyncStorage.setItem(key_evaluationList,JSON.stringify(arrays))
+
+        return arrays
+    }
+}
+
+export async function getEvalsArrayFrom(obj){
+
+    if (obj.status == "ok"){
+        if (obj.evaluations == null){
+            return []
+        } else {
+
+            var contents = [];
+            Object.keys(obj.evaluations).map(function(key){
+                var question = obj.evaluations[key]
+                question.timestamp = key
+                contents.push(question) 
+            })
+            
+            return contents
+        }
+    } else {
+        return []
+    }
+
 }
