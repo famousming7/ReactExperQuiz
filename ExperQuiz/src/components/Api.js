@@ -8,7 +8,8 @@ import {
     AsyncStorage,
 } from 'react-native';
 
-const API_ROOT = "http://backup.experquiz.com/mobile"
+//const API_ROOT = "http://backup.experquiz.com/mobile"
+const API_ROOT = "http://www.experquiz.com/mobile"
 const API_SIGNIN = API_ROOT + "/signin"
 const API_LOGOUT = API_ROOT + "/lotout/"
 const API_EVALUTION_LIST= API_ROOT + "/evals/"

@@ -56,7 +56,7 @@ export default class Login extends Component {
             if (response == null){
 
                 Alert.alert(
-                    'ExpertQuiz',
+                    Strings.alertTitle,
                     Strings.networkError,
                     [
                     {text: 'OK',  onPress: () => console.log('Cancel Pressed'), style: 'cancel'},

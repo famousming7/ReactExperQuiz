@@ -16,7 +16,6 @@ export default class Sidemenu extends Component {
     }
 
     actionLogout(){
-        alert('1')
         logOut()
         this.props.navigation.navigate('Login');
     }

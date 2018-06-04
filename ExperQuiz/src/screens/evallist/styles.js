@@ -45,6 +45,42 @@ export default {
         paddingLeft:10,
         paddingRight:10,
         height:50,
-        backgroundColor:Colors.whiteColor
+        backgroundColor:Colors.whiteColor,
+        justifyContent:'center',
+        alignItems:'center',
+        flexDirection:"row"
+    },
+
+    viewTopic:{
+        width:40,
+        height:40,
+        justifyContent:'center',
+        alignItems:'center',
+        backgroundColor:Colors.blueColor,
+    },
+
+    textTopic:{
+        color:Colors.whiteColor,
+        fontSize:16
+    },
+
+    viewQuestionType:{
+        flex:1,
+        height:40,
+        justifyContent:'center',
+        
+    },
+    textQuestionType:{
+        marginLeft:20,
+        color:Colors.blueColor,
+        fontSize:16,
+        fontWeight:'bold'
+    },
+
+    viewRightArrow:{
+        width:40,
+        height:40,
+        justifyContent:'center',
+        alignItems:'center',
     }
 }

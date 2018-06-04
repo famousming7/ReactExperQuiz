@@ -3,9 +3,11 @@ import {
     View,
     Text,
     Button,
-    FlatList
+    FlatList,
+    TouchableOpacity
 } from 'react-native';
 
+import Icon from 'react-native-vector-icons/FontAwesome';
 import {Colors,Images} from '@theme';
 import Styles from './styles';
 import { Loader,Strings } from '@components';
@@ -42,13 +44,31 @@ export default class Evallist extends Component {
 
     }
 
+    pressEvaluation(evaluation,index) {
+
+        this.props.navigation.navigate("TestPage",{eval:evaluation})
+    }
+
     renderListItem({item, index}){
 
         const {navigate} = this.props.navigation
 
         return (
+            <TouchableOpacity style={Styles.viewQuestion} onPress={()=>this.pressEvaluation(item,index)}>
             <View style={Styles.listitem}>
-            </View>
+                
+                    <View style={[Styles.viewTopic,{'backgroundColor':item.topic_color}]}>
+                        <Text style={Styles.textTopic}>{item.topic_short}</Text>
+                    </View>
+                    <View style={Styles.viewQuestionType}>
+                        <Text style={Styles.textQuestionType}>{item.questionnaire_name}</Text>
+                    </View>
+                    <View style={Styles.viewRightArrow}>
+                        <Icon name="play" color={Colors.blueColor} size={18}/>
+                    </View>
+                
+                </View>
+            </TouchableOpacity>
         )
     }
 
