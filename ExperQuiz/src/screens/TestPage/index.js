@@ -20,7 +20,17 @@ const BackIcon = ({ goBack }) => {
     return (
         <Button  
             style={{backgroundColor: Colors.redColor,margin: 5}}
-            onPress={() => goBack()}>
+            onPress={() => 
+                Alert.alert(
+                    Strings.alertTitle,
+                    Strings.giveUp,
+                    [
+                    {text: 'YES',  onPress: () => this.props.navigation.goBack(), style: 'cancel'},
+                    {text: 'NO',  onPress: () => console.log('cancel'), style: 'cancel'},
+                    ],
+                    { cancelable: true }
+                ) 
+            }>
             <Icon name='arrow-left'  type="FontAwesome" style={{color:Colors.whiteColor,fontSize:20}}/>
         </Button>
     );
@@ -141,7 +151,7 @@ export default class TestPage extends Component {
                     this.saveAnswers("",false)
 
                 } else{
-                    
+
                     this.setState({
                         cQRemaining : this.state.cQRemaining - 1
                     })
@@ -248,7 +258,7 @@ export default class TestPage extends Component {
                     Strings.alertTitle,
                     Strings.finishedQuestion,
                     [
-                    {text: 'OK',  onPress: () => this.props.navigation.goBack(), style: 'cancel'},
+                    {text: 'OK',  onPress: () => this.props.navigation.navigate("ResultPage"), style: 'cancel'},
                     ],
                     { cancelable: true }
                 )            

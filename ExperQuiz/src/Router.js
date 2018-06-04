@@ -8,6 +8,7 @@ import Login from './screens/login'
 import Evallist from './screens/evallist'
 import Sidemenu from './screens/sidemenu'
 import TestPage from './screens/TestPage'
+import ResultPage from './screens/ResultPage'
 
 const MenuIcon = ({ navigate , openDrawer}) => {
     return (
@@ -47,6 +48,9 @@ const EvallistStack = createStackNavigator({
     },
     TestPage : {
         screen : TestPage,
+    },
+    ResultPage:{
+        screen : ResultPage
     }
 });
 
