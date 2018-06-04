@@ -95,5 +95,21 @@ export default {
         backgroundColor:Colors.grayColor,
         alignItems:"center",
         justifyContent:'center'
+    },
+
+    viewNext:{
+        right:0,
+        height:'100%',
+        position:'absolute',
+        alignItems:'flex-end',
+        justifyContent:'center'
+    },
+
+    viewNextButton:{
+        width:50,
+        height:50,
+        alignItems:'center',
+        justifyContent:"center",
+        backgroundColor:Colors.blueColor
     }
 }

@@ -12,6 +12,7 @@ import {Colors,Images} from '@theme';
 import Styles from './styles';
 import { Loader,Strings } from '@components';
 import TimerCountdown from 'react-native-timer-countdown'
+import { copy } from '@utils';
 
 const ANIMATION_TIMEOUT = 50;
 
@@ -133,8 +134,14 @@ export default class TestPage extends Component {
                 if(this.state.cQRemaining<=0){
 
                     clearInterval(this.countTimer)
-                    alert("end")
+                    alert("Time over")
+                    this.setState({
+                        cQAnswered: true
+                    })
+                    this.saveAnswers("",false)
+
                 } else{
+                    
                     this.setState({
                         cQRemaining : this.state.cQRemaining - 1
                     })
@@ -147,9 +154,27 @@ export default class TestPage extends Component {
         }
     }
 
-    youFailed(){
+    saveAnswers(answer_text,isCorrect){
 
+        let result = {
+            question_id:this.state.cQuestion.question_id,
+            answer_given:answer_text,
+            correct:isCorrect,
+            score:isCorrect ? this.state.cQuestion.score : 0 ,
+            timespent:this.state.cQTiming - this.state.cQRemaining
+        }
+        let passed = copy(this.state.passed_questions)
+        passed.push(result)
+
+        this.setState({
+            passed_questions: passed
+        })
+        
+        setTimeout(() => {
+            console.log(this.state.passed_questions)
+        }, ANIMATION_TIMEOUT);
     }
+
 
     selectAnswer(answer){
         
@@ -159,6 +184,8 @@ export default class TestPage extends Component {
                 cQAnswered: true
             })
             clearInterval(this.countTimer)
+
+            this.saveAnswers(answer.answer_text,answer.correct)
         }
     }
 
@@ -195,12 +222,46 @@ export default class TestPage extends Component {
         return listItems
     }
 
+    pressNext(){
+
+        if (this.state.cQAnswered){
+                    
+            if(this.state.evalution.questions.length > this.state.cQIndex + 1){
+
+                let qIndex = this.state.cQIndex + 1
+                this.setState({
+                    cQuestion:this.state.evalution.questions[qIndex],
+                    cQIndex:qIndex,
+                    cQTiming:this.state.evalution.questions[qIndex].timing,
+                    cQRemaining:this.state.evalution.questions[qIndex].timing,
+                    cQAnswered:false,                    
+                });
+
+                setTimeout(() => {
+                
+                    this.startTimer()
+                }, ANIMATION_TIMEOUT);
+
+            } else {
+
+                Alert.alert(
+                    Strings.alertTitle,
+                    Strings.finishedQuestion,
+                    [
+                    {text: 'OK',  onPress: () => this.props.navigation.goBack(), style: 'cancel'},
+                    ],
+                    { cancelable: true }
+                )            
+            }
+        }
+    }
     render() {
 
         return (
             <View style={Styles.container}>
                 
                 <View style={Styles.viewAnswers}>
+                    
                     <ScrollView style={Styles.scrollAnswers}>
 
                         <View style={Styles.viewQuestion}>
@@ -241,6 +302,15 @@ export default class TestPage extends Component {
                             </View>
                         }
                     </ScrollView>
+                    { this.state.cQAnswered == false ? null :
+                    <View style={Styles.viewNext}>
+                        <TouchableOpacity onPress={this.pressNext.bind(this)}>
+                            <View style={Styles.viewNextButton}>
+                                <Icon name='angle-right'  type="FontAwesome" style={{color:Colors.whiteColor,fontSize:25}}/>
+                            </View>
+                        </TouchableOpacity>
+                    </View>
+                    }
                 </View>
             </View>
         )
