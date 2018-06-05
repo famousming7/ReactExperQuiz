@@ -25,7 +25,7 @@ const BackIcon = ({ goBack }) => {
                     Strings.alertTitle,
                     Strings.giveUp,
                     [
-                    {text: 'YES',  onPress: () => this.props.navigation.goBack(), style: 'cancel'},
+                    {text: 'YES',  onPress: () => goBack(), style: 'cancel'},
                     {text: 'NO',  onPress: () => console.log('cancel'), style: 'cancel'},
                     ],
                     { cancelable: true }

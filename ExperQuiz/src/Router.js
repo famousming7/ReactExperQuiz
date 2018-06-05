@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Image} from 'react-native';
+import {Image,View} from 'react-native';
 import { createStackNavigator, createDrawerNavigator} from 'react-navigation';
 import { Button, Icon, Text} from 'native-base';
 import {Colors,Images} from '@theme';
@@ -39,7 +39,7 @@ const EvallistStack = createStackNavigator({
     Evallist : {
         screen : Evallist,
         navigationOptions: ({ navigation }) => ({
-            headerTitle: <Text style={{fontSize: 20, fontWeight: 'bold'}}>My Company</Text>  ,
+            headerTitle: <View style={{alignItems:'center',width:'100%',height:'100%',justifyContent:'center'}}><Text style={{fontSize: 20, fontWeight: 'bold'}}>My Company</Text></View>  ,
             headerStyle: { backgroundColor: Colors.whiteColor, height: 55},
             headerTitleStyle: {color: '#a7c3f2'},
             headerLeft: <MenuIcon {...navigation} />,
