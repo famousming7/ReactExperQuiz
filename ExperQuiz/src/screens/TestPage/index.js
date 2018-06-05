@@ -170,6 +170,7 @@ export default class TestPage extends Component {
             question_id:this.state.cQuestion.question_id,
             answer_given:answer_text,
             correct:isCorrect,
+            real_score: this.state.cQuestion.score,
             score:isCorrect ? this.state.cQuestion.score : 0 ,
             timespent:this.state.cQTiming - this.state.cQRemaining
         }
@@ -258,7 +259,7 @@ export default class TestPage extends Component {
                     Strings.alertTitle,
                     Strings.finishedQuestion,
                     [
-                    {text: 'OK',  onPress: () => this.props.navigation.navigate("ResultPage"), style: 'cancel'},
+                    {text: 'OK',  onPress: () => this.props.navigation.navigate("ResultPage",{'evaluation_id':this.state.evalution.evaluation_id,'passed_questions':this.state.passed_questions}), style: 'cancel'},
                     ],
                     { cancelable: true }
                 )            
