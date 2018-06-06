@@ -8,11 +8,12 @@ import {
     AsyncStorage,
 } from 'react-native';
 
-//const API_ROOT = "http://backup.experquiz.com/mobile"
-const API_ROOT = "http://www.experquiz.com/mobile"
-const API_SIGNIN = API_ROOT + "/signin"
-const API_LOGOUT = API_ROOT + "/lotout/"
-const API_EVALUTION_LIST= API_ROOT + "/evals/"
+//const API_ROOT = "http://www.experquiz.com/mobile"
+const API_ROOT = "http://backup.experquiz.com/mobile"
+const API_SIGNIN            = API_ROOT + "/signin"
+const API_LOGOUT            = API_ROOT + "/lotout/"
+const API_EVALUTION_LIST    = API_ROOT + "/evals/"
+const API_POST_ANSWERS      = API_ROOT + "/evals/"
 const mobileToken = "mobile_token"
 const key_evaluationList = "evaluation_list"
 
@@ -37,6 +38,25 @@ export async function getJSONwithCache(url, fromCached = false){
     }
 }
 
+export async function postJSON(url, json) {
+
+    try {
+        let response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(json),
+        });
+        let responseJson = await response.json() 
+        return responseJson
+    } catch (error) {
+        console.log("error", error)
+    }
+    return null        
+}
+
 export async function postJSONwithFormData(url, formData) {
 
     try {
@@ -49,18 +69,10 @@ export async function postJSONwithFormData(url, formData) {
             body: formData,
         });
         let responseJson = await response.json() 
-        
-        if (responseJson.status = "ok") {
-            /// Save Token in app syncStorage
-            AsyncStorage.setItem(mobileToken, responseJson.mobile_token)
-        }
-        console.log(responseJson)
         return responseJson
-        
     } catch (error) {
         console.log("error", error)
     }
-
     return null        
 }
 
@@ -69,7 +81,14 @@ export async function checkLogin(email,password, fromCached = false) {
     let formdata = new FormData();
     formdata.append("email",email);
     formdata.append("password",password);
-    return await postJSONwithFormData(API_SIGNIN, formdata)
+
+    let response =  await postJSONwithFormData(API_SIGNIN, formdata);
+
+    if (response.status == "ok") {
+        /// Save Token in app syncStorage
+        AsyncStorage.setItem(mobileToken, response.mobile_token)
+    }
+    return response
 }
 
 export async function checkLoginToken(){
@@ -131,4 +150,21 @@ export async function getEvalsArrayFrom(obj){
         return []
     }
 
+}
+
+export async function postAnswers(evalution_id,passed_questions, fromCached = false) {
+    const myToken = await AsyncStorage.getItem(mobileToken)
+    let postData = {
+        "evaluation":{
+            "evaluation_id":evalution_id,
+            "mobile_token":myToken,
+            "passed_questions":passed_questions
+        }
+    };
+    console.log(postData)
+    let url = API_POST_ANSWERS + myToken
+    let response =  await postJSON(url, postData);
+    console.log(response)
+
+    return response
 }

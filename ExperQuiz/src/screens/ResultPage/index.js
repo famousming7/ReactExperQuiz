@@ -7,8 +7,9 @@ import {
 
 import { Button, Icon, Text} from 'native-base';
 import {Colors,Images} from '@theme';
+import { Loader,Strings } from '@components';
 import Styles from './styles';
-
+import { postAnswers} from "@api";
 const BackIcon = ({ navigate }) => {
     return (
         <Button  
@@ -42,6 +43,8 @@ export default class ResultPage extends Component {
         super(props);
 
         let passed_questions =  props.navigation.getParam('passed_questions')
+        let evaluation_id  =  props.navigation.getParam('evaluation_id')
+
         score = 0
         totalScore = 0
         success = 0
@@ -62,20 +65,29 @@ export default class ResultPage extends Component {
         successPercent = parseInt((success / passed_questions.length) * 100)
 
         this.state = ({
-            evaluation_id : props.navigation.getParam('evaluation_id'),
+            evaluation_id : evaluation_id,
             passed_questions : passed_questions,
             score:score,
             totalScore:totalScore,
             success:successPercent,
-            timespent:timespent
+            timespent:timespent,
+            loaderVisible:false
         });
+    }
+
+    async componentDidMount(){
+
+        this.setState({loaderVisible: true})
+        let posted = await postAnswers(this.state.evaluation_id,this.state.passed_questions)
+        console.log(posted)
+        this.setState({loaderVisible:false})
     }
 
     render() {
 
         return (
             <View style={Styles.container}>
-
+                <Loader loading={this.state.loaderVisible}/>
                 <View style={Styles.viewQuestion}>
                     <Text style={Styles.textQuestion}>QUESTION</Text>
                 </View>

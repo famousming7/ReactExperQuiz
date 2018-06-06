@@ -16,7 +16,7 @@ import { copy } from '@utils';
 
 const ANIMATION_TIMEOUT = 50;
 
-const BackIcon = ({ goBack }) => {
+const BackIcon = ({ giveUp }) => {
     return (
         <Button  
             style={{backgroundColor: Colors.redColor,margin: 5}}
@@ -25,7 +25,7 @@ const BackIcon = ({ goBack }) => {
                     Strings.alertTitle,
                     Strings.giveUp,
                     [
-                    {text: 'YES',  onPress: () => goBack(), style: 'cancel'},
+                    {text: 'YES',  onPress: () => giveUp(), style: 'cancel'},
                     {text: 'NO',  onPress: () => console.log('cancel'), style: 'cancel'},
                     ],
                     { cancelable: true }
@@ -66,7 +66,7 @@ export default class TestPage extends Component {
 
         return {
           headerTitle: <TitleView index={state.params.index} total={state.params.totalCount} remaining={state.params.remaining} timing={state.params.timing}/> ,
-          headerLeft: <BackIcon {...navigation} />,
+          headerLeft: <BackIcon {...navigation} giveUp={state.params.giveUp}/>,
           headerStyle: { backgroundColor: Colors.whiteColor, height: 55},
           headerRight: <LogoIcon {...navigation}/>
         };
@@ -127,6 +127,12 @@ export default class TestPage extends Component {
         }
     }
 
+    giveUp(){
+
+        clearInterval(this.countTimer)
+        this.props.navigation.goBack()
+    }
+
     setNavigationValues(){
 
         this.props.navigation.setParams({
@@ -134,6 +140,7 @@ export default class TestPage extends Component {
             index:this.state.cQIndex,
             remaining:this.state.cQRemaining,
             timing:this.state.cQTiming,
+            giveUp:this.giveUp.bind(this)
         })
     }
 
