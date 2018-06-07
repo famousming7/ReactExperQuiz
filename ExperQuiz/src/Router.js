@@ -76,3 +76,16 @@ export const LoginNav = createStackNavigator({
       gesturesEnabled: false
     }
 })
+
+export const LoggedinNav = createStackNavigator({
+    Login : {screen : Login},
+    EvallistMenu : {screen : EvalListWithMenu},
+    
+},{
+    index: 0,
+    initialRouteName: 'EvallistMenu',
+    headerMode: 'none',
+    navigationOptions: {
+      gesturesEnabled: false
+    }
+})

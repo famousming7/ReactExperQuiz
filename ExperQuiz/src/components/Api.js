@@ -14,7 +14,9 @@ const API_SIGNIN            = API_ROOT + "/signin"
 const API_LOGOUT            = API_ROOT + "/lotout/"
 const API_EVALUTION_LIST    = API_ROOT + "/evals/"
 const API_POST_ANSWERS      = API_ROOT + "/evals/"
+
 const mobileToken = "mobile_token"
+const emailAddress = "email_address"
 const key_evaluationList = "evaluation_list"
 
 export async function getJSONwithCache(url, fromCached = false){
@@ -87,14 +89,21 @@ export async function checkLogin(email,password, fromCached = false) {
     if (response.status == "ok") {
         /// Save Token in app syncStorage
         AsyncStorage.setItem(mobileToken, response.mobile_token)
+        AsyncStorage.setItem(emailAddress, email)
     }
     return response
 }
 
+export async function getEmail(){
+
+    return await AsyncStorage.getItem(emailAddress) ?  AsyncStorage.getItem(emailAddress) : ""
+}
+
 export async function checkLoginToken(){
 
-    const myToken = await AsyncStorage.getItem(mobileToken)
-    if (!myToken || myToken == ""){
+    myToken = await AsyncStorage.getItem(mobileToken)
+    console.log("saved token : " + myToken)
+    if (myToken == null){
         return ""
     } else {
         return myToken

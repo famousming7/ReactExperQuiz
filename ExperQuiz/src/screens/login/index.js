@@ -8,13 +8,14 @@ import {
     Image,
     Button,
     Alert,
-    NetInfo
+    NetInfo,
+    KeyboardAvoidingView
 } from 'react-native';
 
 import {Colors,Images} from '@theme';
 import Styles from './styles';
 import { Loader,Strings } from '@components';
-import { checkLogin} from "@api";
+import { checkLogin, getEmail} from "@api";
 
 export default class Login extends Component {
 
@@ -23,11 +24,16 @@ export default class Login extends Component {
 
         this.state = ({
             loaderVisible: false,
-            email:"patrice@experquiz.com",
+            email:"",
             password:"Aebuu6ai"
         })
     }
 
+    async componentDidMount(){
+        this.setState({
+            email: await getEmail()
+        })
+    }
     changeEmail(text){
         this.setState({
             email:text
@@ -87,46 +93,55 @@ export default class Login extends Component {
     render() {
 
         return (
-            <View style={Styles.container}>
-                <Loader loading={this.state.loaderVisible}/>
-                <View style={Styles.viewlogo}>
-                    <Image style={Styles.imgLogo} source={Images.logo}/>
-                </View>
-                <View style={Styles.viewSign}>
-                    <Text style={Styles.textSignin}>Sign-in</Text>
-                </View>
-
-                <View style={Styles.viewEmail}>
-                    <Text style={Styles.textEmail}>Your email address or mobile phone *</Text>
-                </View>
-
-                <View style={Styles.viewInput}>
-                    <TextInput value={this.state.email} style={Styles.inputEmail} maxLength={50} onChangeText={(text)=> this.changeEmail(text)}></TextInput>
-                </View>
-
-                <View style={Styles.viewPass}>
-                    <Text style={Styles.textPass}>Your password *</Text>
-                </View>
-
-                <View style={Styles.viewInput}>
-                    <TextInput value={this.state.password} style={Styles.inputPass} maxLength={30} onChangeText={(text)=> this.changePassword(text)} secureTextEntry={true} ></TextInput>
-                </View>
-               
-                <View style={Styles.viewForgot}>
-                    <Text style={Styles.textForgot}>Forgot your password?</Text>
-                    <TouchableOpacity onPress={this.onPressRest.bind(this)}>
-                        <Text style={Styles.textReset}>Click here to reset it</Text>
-                    </TouchableOpacity>
-                </View>
-
-                <View style={Styles.viewCenter}>
-                    <View style={Styles.viewBtnSignin}>
-                        <TouchableOpacity onPress={this.onPressSignIn.bind(this)}>
-                            <Text style={Styles.btnSignin}>SIGN-IN</Text>
-                        </TouchableOpacity>
+            <KeyboardAvoidingView style={Styles.avoidView} behavior="position">
+                <View style={Styles.container}>
+                    
+                    <Loader loading={this.state.loaderVisible}/>                     
+                    <View style={Styles.viewlogo}>
+                        <Image style={Styles.imgLogo} source={Images.logo}/>
                     </View>
+
+                    <View style={Styles.mainView}>
+                    
+                        <View style={Styles.viewSign}>
+                            <Text style={Styles.textSignin}>Sign-in</Text>
+                        </View>
+
+                        <View style={Styles.viewEmail}>
+                            <Text style={Styles.textEmail}>Your email address or mobile phone *</Text>
+                        </View>
+
+                        <View style={Styles.viewInput}>
+                            <TextInput value={this.state.email} style={Styles.inputEmail} maxLength={50} onChangeText={(text)=> this.changeEmail(text)}></TextInput>
+                        </View>
+
+                        <View style={Styles.viewPass}>
+                            <Text style={Styles.textPass}>Your password *</Text>
+                        </View>
+
+                        <View style={Styles.viewInput}>
+                            <TextInput value={this.state.password} style={Styles.inputPass} maxLength={30} onChangeText={(text)=> this.changePassword(text)} secureTextEntry={true} ></TextInput>
+                        </View>
+                    
+                        <View style={Styles.viewForgot}>
+                            <Text style={Styles.textForgot}>Forgot your password?</Text>
+                            <TouchableOpacity onPress={this.onPressRest.bind(this)}>
+                                <Text style={Styles.textReset}>Click here to reset it</Text>
+                            </TouchableOpacity>
+                        </View>
+
+                        <View style={Styles.viewCenter}>
+                            <View style={Styles.viewBtnSignin}>
+                                <TouchableOpacity onPress={this.onPressSignIn.bind(this)}>
+                                    <Text style={Styles.btnSignin}>SIGN-IN</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                        
+                    </View>
+                    
                 </View>
-            </View>
+            </KeyboardAvoidingView>
         );
     }
     

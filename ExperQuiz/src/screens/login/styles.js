@@ -4,20 +4,29 @@ import {Colors} from '@theme';
 export default {
 
     container: {
-        flex: 1, 
         marginTop:0,
         flexDirection: 'column',
         width:'100%',
+        height:'100%',
         backgroundColor:Colors.whiteColor
     },
-
-    viewlogo:{
-        marginTop:100,
+    avoidView:{
         width:'100%',
-        height:100,
-        alignItems:'center'
+        height:'100%'
     },
-
+    viewlogo:{
+        width:'100%',
+        flex:1,
+        alignItems:'center',
+        justifyContent:'flex-end',
+        paddingBottom:30
+    },
+    mainView : {
+        flexDirection: 'column',
+        width:'100%',
+        height:430,
+        backgroundColor:Colors.whiteColor
+    },
     imgLogo:{        
         width:100,
         height:100,
@@ -44,14 +53,14 @@ export default {
     viewInput:{
         marginLeft:30,
         marginRight:30,
-        height:35,
+        height:37,
         justifyContent:'center',
         paddingLeft:8,
         backgroundColor: Colors.lightGrayColor
     },
 
     inputEmail:{
-
+        fontSize: 13,
     },
 
     viewPass:{
@@ -61,7 +70,7 @@ export default {
         
     },
     textPass:{
-        fontSize: 15,
+        fontSize: 13,
         fontWeight:'bold',
         color: Colors.grayColor
     },
