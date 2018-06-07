@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import {
     View,
+    TouchableOpacity
 } from 'react-native';
 import { Button, Icon, Text} from 'native-base';
 import {Colors,Images} from '@theme';
@@ -24,13 +25,17 @@ export default class Sidemenu extends Component {
 
         return (
             <View style={Styles.container}>
-                <Button 
-                    iconLeft 
-                    style={{backgroundColor: Colors.grayColor, margin: 8}}
-                    onPress={this.actionLogout.bind(this)}>
-                    <Icon name='home' />
-                    <Text>Log Out</Text>
-                </Button>
+                <View style={Styles.menuItem}>
+                    <TouchableOpacity style={Styles.menuItem} onPress={this.actionLogout.bind(this)}>
+                        <View style={Styles.menuIcon}>
+                            <Icon name='home' style={{color:Colors.blueColor}}/>
+                        </View>
+                        <View style={Styles.menuText}>
+                            <Text style={Styles.textLogout}>Log Out</Text>
+                        </View>
+                    </TouchableOpacity>
+                </View>
+
             </View>
         )
     }

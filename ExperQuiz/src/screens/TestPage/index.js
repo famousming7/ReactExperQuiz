@@ -4,7 +4,8 @@ import {
     Alert,
     ScrollView,
     TouchableOpacity,
-    Image
+    Image,
+    BackHandler
 } from 'react-native';
 import * as Progress from 'react-native-progress';
 import { Button, Icon, Text} from 'native-base';
@@ -19,7 +20,7 @@ const ANIMATION_TIMEOUT = 50;
 const BackIcon = ({ giveUp }) => {
     return (
         <Button  
-            style={{backgroundColor: Colors.redColor,margin: 5}}
+            style={{backgroundColor: Colors.whiteColor,margin: 5}}
             onPress={() => 
                 Alert.alert(
                     Strings.alertTitle,
@@ -31,7 +32,7 @@ const BackIcon = ({ giveUp }) => {
                     { cancelable: true }
                 ) 
             }>
-            <Icon name='arrow-left'  type="FontAwesome" style={{color:Colors.whiteColor,fontSize:20}}/>
+            <Icon name='chevron-left'  type="FontAwesome" style={{color:Colors.redColor,fontSize:25}}/>
         </Button>
     );
 }
@@ -54,7 +55,7 @@ const TitleView =  ({ index,total ,remaining,timing}) => {
 
 const LogoIcon = ({ navigate }) => {
     return (
-            <Image style={{width:45,height:40}} source = {Images.logo}/>
+            <Image style={{width:50,height:'100%'}} source = {Images.logo}/>
     );
 }
 
@@ -80,6 +81,7 @@ export default class TestPage extends Component {
             cQIndex: 0,
             cQTiming : 0,
             cQRemaining: 0,
+            cQISTimeout: false,
             cQuestion:{
                 explain:"",
                 nanswers:[],
@@ -99,7 +101,7 @@ export default class TestPage extends Component {
     }
 
     componentWillMount(){
-        
+        BackHandler.addEventListener('hardwareBackPress', () => {return true});
         if(this.state.evalution.questions.length > 0){
 
             this.setState({
@@ -125,6 +127,15 @@ export default class TestPage extends Component {
                 { cancelable: true }
             )            
         }
+    }
+
+    componentWillUnmount() {
+        BackHandler.removeEventListener('hardwareBackPress', this.handleBackButton);
+    }
+
+    handleBackButton() {
+        ToastAndroid.show('Back button is pressed', ToastAndroid.SHORT);
+        return true;
     }
 
     giveUp(){
@@ -153,7 +164,8 @@ export default class TestPage extends Component {
                     clearInterval(this.countTimer)
                     alert("Time over")
                     this.setState({
-                        cQAnswered: true
+                        cQAnswered: true,
+                        cQISTimeout: true
                     })
                     this.saveAnswers("",false)
 
@@ -230,7 +242,7 @@ export default class TestPage extends Component {
             listItems.push(
 
                 <TouchableOpacity onPress={()=>this.selectAnswer(mAnswer)} key={answer.answer_text}>
-                    <View style={[Styles.viewItemAnswer,{borderLeftWidth:leftBorderWidth,borderLeftColor:backColor}]} key={answer.answer_text}>               
+                    <View style={[Styles.viewItemAnswer,{borderLeftWidth:leftBorderWidth,borderColor:backColor}]} key={answer.answer_text}>               
                                 
                         <Text style={Styles.textItemAnswer} >{answer.answer_text}</Text>
                     </View>
@@ -252,7 +264,8 @@ export default class TestPage extends Component {
                     cQIndex:qIndex,
                     cQTiming:this.state.evalution.questions[qIndex].timing,
                     cQRemaining:this.state.evalution.questions[qIndex].timing,
-                    cQAnswered:false,                    
+                    cQAnswered:false,   
+                    cQISTimeout:false                 
                 });
 
                 setTimeout(() => {
@@ -293,11 +306,11 @@ export default class TestPage extends Component {
                         { this.state.cQAnswered == false ? null :
                             <View>
                                 <View style={Styles.viewExplain}>
-                                    <View style={Styles.viewRectRed}>
+                                    <View style={[Styles.viewRectRed,{backgroundColor: this.state.cQAnswer.correct ? Colors.greenColor:Colors.redColor}]}>
                                         <Icon name='times'  type="FontAwesome" style={{color:Colors.whiteColor,fontSize:25}}/>
                                     </View>
                                     <View style={Styles.viewRect}>
-                                        <Text style={Styles.textHint}>EXPLAIN</Text>
+                                        <Text style={Styles.textHint}>{this.state.cQISTimeout ? "TIME OUT" : this.state.cQAnswer.correct ? "GREAT!" :"NOT QUITE"}</Text>
                                     </View>
                                 </View>                      
                             

@@ -58,7 +58,6 @@ export default {
     viewRectRed:{
         width:50,
         height:50,
-        backgroundColor:Colors.redColor,
         alignItems:"center",
         justifyContent:'center'
     },
@@ -68,7 +67,7 @@ export default {
         height:'100%',
         backgroundColor:Colors.lightGrayColor,
         justifyContent:'center',
-        paddingLeft:30
+        paddingLeft:20
     },
 
     textHint:{

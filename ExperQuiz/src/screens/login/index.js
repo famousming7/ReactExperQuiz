@@ -9,13 +9,14 @@ import {
     Button,
     Alert,
     NetInfo,
-    KeyboardAvoidingView
+    KeyboardAvoidingView,
+    Linking
 } from 'react-native';
 
 import {Colors,Images} from '@theme';
 import Styles from './styles';
 import { Loader,Strings } from '@components';
-import { checkLogin, getEmail} from "@api";
+import { checkLogin, getEmail,API_URL_SIGNIN} from "@api";
 
 export default class Login extends Component {
 
@@ -48,7 +49,7 @@ export default class Login extends Component {
     }
 
     onPressRest(){
-
+        Linking.openURL(API_URL_SIGNIN)
     }
 
     async onPressSignIn(){

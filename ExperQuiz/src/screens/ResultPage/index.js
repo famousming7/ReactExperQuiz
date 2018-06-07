@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import {
     View,
     Alert,
-    Image
+    Image,
+    BackHandler
 } from 'react-native';
 
 import { Button, Icon, Text} from 'native-base';
@@ -13,16 +14,16 @@ import { postAnswers} from "@api";
 const BackIcon = ({ navigate }) => {
     return (
         <Button  
-            style={{backgroundColor: Colors.redColor,margin: 5}}
+            style={{backgroundColor: Colors.whiteColor,margin: 5}}
             onPress={() => navigate('Evallist')}>
-            <Icon name='arrow-left'  type="FontAwesome" style={{color:Colors.whiteColor,fontSize:20}}/>
+            <Icon name='chevron-left'  type="FontAwesome" style={{color:Colors.redColor,fontSize:25}}/>
         </Button>
     );
 }
 
 const LogoIcon = ({ navigate }) => {
     return (
-            <Image style={{width:45,height:40}} source = {Images.logo}/>
+            <Image style={{width:50,height:'100%'}} source = {Images.logo}/>
     );
 }
 
@@ -81,6 +82,15 @@ export default class ResultPage extends Component {
         let posted = await postAnswers(this.state.evaluation_id,this.state.passed_questions)
         console.log(posted)
         this.setState({loaderVisible:false})
+    }
+
+    componentWillUnmount() {
+        BackHandler.removeEventListener('hardwareBackPress', this.handleBackButton);
+    }
+
+    handleBackButton() {
+        ToastAndroid.show('Back button is pressed', ToastAndroid.SHORT);
+        return true;
     }
 
     render() {

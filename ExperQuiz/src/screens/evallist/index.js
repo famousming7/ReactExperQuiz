@@ -2,19 +2,43 @@ import React, { Component } from 'react';
 import {
     View,
     Text,
-    Button,
+
     FlatList,
-    TouchableOpacity
+    TouchableOpacity,
+    BackHandler
 } from 'react-native';
 
-import Icon from 'react-native-vector-icons/FontAwesome';
+
+import { Icon,Button} from 'native-base';
 import {Colors,Images} from '@theme';
 import Styles from './styles';
-import { Loader,Strings } from '@components';
-import { getEvalsListFromApi} from "@api";
+import { Loader,Strings ,LogoIcon} from '@components';
+import { getEvalsListFromApi ,getUserInfo} from "@api";
 import { DrawerNavigator } from "react-navigation";
 
+
+const MenuIcon = ({ navigate , openDrawer}) => {
+    return (
+        <Button  
+            style={{backgroundColor: Colors.whiteColor,margin: 5}}
+            onPress={() => openDrawer()}>
+            <Icon name='bars' type="FontAwesome" style={{color:Colors.redColor}} fontSize={13}/>
+        </Button>
+    );
+}
+
 export default class Evallist extends Component {
+
+    static navigationOptions = ({ navigation }) => {
+        const {state} = navigation;
+        console.log(state)
+        return {
+          headerTitle: <View style={{alignItems:'center',width:'100%',height:'100%',justifyContent:'center'}}><Text style={{fontSize: 20, fontWeight: 'bold'}}>{state.params == null? "":state.params.enterprise_name}</Text></View>  ,
+          headerLeft:  <MenuIcon {...navigation} />,
+          headerStyle: { backgroundColor: Colors.whiteColor, height: 55},
+          headerRight: <LogoIcon {...navigation}/>
+        };
+    };
 
     constructor(props) {
         super(props);
@@ -22,16 +46,36 @@ export default class Evallist extends Component {
         this.state = ({
             loaderVisible: false,
             evaluationsArray: [],
+            enterprise_name:""
         })
 
+        this.props.navigation.setParams({
+            enterprise_name:""
+        })
         //this.getNewList()
     }
 
     async componentDidMount(){
-
+        BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
         this.getNewList()
+        userinfo = await getUserInfo()
+        
+        this.setState({
+            enterprise_name: userinfo.enterprise_name == null ? "My Company": userinfo.enterprise_name
+        })
+        this.props.navigation.setParams({
+            enterprise_name: userinfo.enterprise_name == null ? "My Company": userinfo.enterprise_name
+        })
     }
-    
+
+    componentWillUnmount() {
+        BackHandler.removeEventListener('hardwareBackPress', this.handleBackButton);
+    }
+
+    handleBackButton() {
+        ToastAndroid.show('Back button is pressed', ToastAndroid.SHORT);
+        return true;
+    }
     async getNewList(){
 
         this.setState({loaderVisible: true})
@@ -82,7 +126,7 @@ export default class Evallist extends Component {
                     {/* <Button title="getNewList" onPress={this.getNewList.bind(this)} /> */}
                 </View>
                 <View style={Styles.viewlistCount}>
-                    <Text style={Styles.textlistCount}>There are {this.state.evaluationsArray.length} ratings pending</Text>
+                    <Text style={Styles.textlistCount}>There are {this.state.evaluationsArray.length} evaluations pending</Text>
                 </View>
                 <View style={Styles.viewLists}>
                     <FlatList

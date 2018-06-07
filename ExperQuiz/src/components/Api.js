@@ -14,9 +14,11 @@ const API_SIGNIN            = API_ROOT + "/signin"
 const API_LOGOUT            = API_ROOT + "/lotout/"
 const API_EVALUTION_LIST    = API_ROOT + "/evals/"
 const API_POST_ANSWERS      = API_ROOT + "/evals/"
+export const API_URL_SIGNIN        = "http://www.experquiz.com/en/?signin=true"
 
 const mobileToken = "mobile_token"
 const emailAddress = "email_address"
+const userInfo = "user_info"
 const key_evaluationList = "evaluation_list"
 
 export async function getJSONwithCache(url, fromCached = false){
@@ -85,10 +87,11 @@ export async function checkLogin(email,password, fromCached = false) {
     formdata.append("password",password);
 
     let response =  await postJSONwithFormData(API_SIGNIN, formdata);
-
+    console.log(response)
     if (response.status == "ok") {
         /// Save Token in app syncStorage
         AsyncStorage.setItem(mobileToken, response.mobile_token)
+        AsyncStorage.setItem(userInfo, response)
         AsyncStorage.setItem(emailAddress, email)
     }
     return response
@@ -97,6 +100,13 @@ export async function checkLogin(email,password, fromCached = false) {
 export async function getEmail(){
 
     return await AsyncStorage.getItem(emailAddress) ?  AsyncStorage.getItem(emailAddress) : ""
+}
+
+export async function getUserInfo(){
+
+    let userinfo = await AsyncStorage.getItem(userInfo)
+
+    return userinfo == null ? {enterprise_name:"My Company",first_name:"First",last_name:"last"} : userinfo
 }
 
 export async function checkLoginToken(){
