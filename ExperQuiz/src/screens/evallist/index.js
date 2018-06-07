@@ -2,10 +2,11 @@ import React, { Component } from 'react';
 import {
     View,
     Text,
-
+    Alert,
     FlatList,
     TouchableOpacity,
-    BackHandler
+    BackHandler,
+    ToastAndroid
 } from 'react-native';
 
 
@@ -13,9 +14,9 @@ import { Icon,Button} from 'native-base';
 import {Colors,Images} from '@theme';
 import Styles from './styles';
 import { Loader,Strings ,LogoIcon} from '@components';
-import { getEvalsListFromApi ,getUserInfo} from "@api";
+import { getEvalsListFromApi ,getUserInfo, getPassedEvaluations} from "@api";
 import { DrawerNavigator } from "react-navigation";
-
+import { copy} from "@utils";
 
 const MenuIcon = ({ navigate , openDrawer}) => {
     return (
@@ -31,7 +32,7 @@ export default class Evallist extends Component {
 
     static navigationOptions = ({ navigation }) => {
         const {state} = navigation;
-        console.log(state)
+
         return {
           headerTitle: <View style={{alignItems:'center',width:'100%',height:'100%',justifyContent:'center'}}><Text style={{fontSize: 20, fontWeight: 'bold'}}>{state.params == null? "":state.params.enterprise_name}</Text></View>  ,
           headerLeft:  <MenuIcon {...navigation} />,
@@ -46,51 +47,111 @@ export default class Evallist extends Component {
         this.state = ({
             loaderVisible: false,
             evaluationsArray: [],
-            enterprise_name:""
+            enterprise_name:"",
+            passedEvaluations:[]
         })
 
         this.props.navigation.setParams({
             enterprise_name:""
         })
-        //this.getNewList()
     }
 
     async componentDidMount(){
+        
         BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
         this.getNewList()
         userinfo = await getUserInfo()
-        
         this.setState({
             enterprise_name: userinfo.enterprise_name == null ? "My Company": userinfo.enterprise_name
         })
         this.props.navigation.setParams({
             enterprise_name: userinfo.enterprise_name == null ? "My Company": userinfo.enterprise_name
         })
+        
+    }
+    
+    async componentWillReceiveProps(){
+
+        this.setState({
+            passedEvaluations: await getPassedEvaluations()
+        })  
+
     }
 
     componentWillUnmount() {
-        BackHandler.removeEventListener('hardwareBackPress', this.handleBackButton);
+         BackHandler.removeEventListener('hardwareBackPress', this.handleBackButton);
     }
 
     handleBackButton() {
-        ToastAndroid.show('Back button is pressed', ToastAndroid.SHORT);
+        //ToastAndroid.show('Back button is pressed', ToastAndroid.SHORT);
         return true;
     }
     async getNewList(){
 
         this.setState({loaderVisible: true})
         let newList = await getEvalsListFromApi()
-        console.log(newList)
         this.setState({
-            evaluationsArray:newList,
-            loaderVisible:false
-        })
+             evaluationsArray:newList,
+             loaderVisible:false
+         })
 
     }
 
-    pressEvaluation(evaluation,index) {
 
-        this.props.navigation.navigate("TestPage",{eval:evaluation})
+    deleteEvalution(evaluation,index) {
+
+        Alert.alert(
+            Strings.alertTitle,
+            Strings.sureToRemove,
+            [
+            {text: 'YES',  onPress: () => {
+                this.setState({
+                    evaluationsArray: this.state.evaluationsArray.filter((_, i) => i !== index)
+                });
+            }, style: 'cancel'},
+            {text: 'NO',  onPress: () => console.log('cancel'), style: 'cancel'},
+            ],
+            { cancelable: true }
+        ) 
+    }
+
+    calcPassedScore(evaluation){
+        var arr = this.checkAlreadyPassed(evaluation.evaluation_id)
+        var score = 0
+        var totalScore = 0
+        for ( question of arr){
+
+            totalScore += question.real_score
+
+            if (question.correct){
+                score += question.score
+            }
+        }
+
+        return "completed with " + score + "/" + totalScore
+    }
+
+    pressEvaluation(evaluation,index) {
+        
+        var arr = this.checkAlreadyPassed(evaluation.evaluation_id)
+
+        if (arr == false || arr.length == 0 ) {
+            this.props.navigation.navigate("TestPage",{eval:evaluation})            
+        } else {
+            this.props.navigation.navigate("ResultPage",{evalution_id:evaluation.evaluation_id,passed_questions:arr,is_onlyview:true})
+        }
+    }
+
+    checkAlreadyPassed(evaluation_id){
+
+        if(this.state.passedEvaluations.length > 0){
+            for (obj of this.state.passedEvaluations){
+                if (obj.evaluation_id == evaluation_id){                    
+                    return obj.passed_questions
+                }
+            }
+        }
+        return false
     }
 
     renderListItem({item, index}){
@@ -99,16 +160,25 @@ export default class Evallist extends Component {
 
         return (
             <TouchableOpacity style={Styles.viewQuestion} onPress={()=>this.pressEvaluation(item,index)}>
-            <View style={Styles.listitem}>
+                <View style={Styles.listitem}>
                 
                     <View style={[Styles.viewTopic,{'backgroundColor':item.topic_color}]}>
                         <Text style={Styles.textTopic}>{item.topic_short}</Text>
                     </View>
                     <View style={Styles.viewQuestionType}>
                         <Text style={Styles.textQuestionType}>{item.questionnaire_name}</Text>
+                        { this.checkAlreadyPassed(item.evaluation_id) != false ?
+                        <Text style={Styles.textPassResult}>{this.calcPassedScore(item)}</Text>
+                        : null}
                     </View>
                     <View style={Styles.viewRightArrow}>
-                        <Icon name="play" color={Colors.blueColor} size={18}/>
+                        { this.checkAlreadyPassed(item.evaluation_id) != false ?
+                        <TouchableOpacity style={Styles.deleteIcon} onPress={()=>this.deleteEvalution(item,index)}>
+                            <Icon name="trash" type="FontAwesome" style={{color:Colors.blueColor,fontSize:14}} />
+                        </TouchableOpacity>
+                        :
+                        <Icon name="play" type="FontAwesome" style={{color:Colors.blueColor,fontSize:14}} />
+                        }
                     </View>
                 
                 </View>
@@ -133,6 +203,7 @@ export default class Evallist extends Component {
                         data = {this.state.evaluationsArray}
                         renderItem = {this.renderListItem.bind(this)}
                         keyExtractor = {(item,index) => index.toString()}
+                        extraData={this.state}
                     />
                 </View>
             </View>

@@ -5,9 +5,11 @@ import {
     ScrollView,
     TouchableOpacity,
     Image,
-    BackHandler
+    BackHandler,
+    Dimensions 
 } from 'react-native';
 import * as Progress from 'react-native-progress';
+import HTML from 'react-native-render-html';
 import { Button, Icon, Text} from 'native-base';
 import {Colors,Images} from '@theme';
 import Styles from './styles';
@@ -162,7 +164,6 @@ export default class TestPage extends Component {
                 if(this.state.cQRemaining<=0){
 
                     clearInterval(this.countTimer)
-                    alert("Time over")
                     this.setState({
                         cQAnswered: true,
                         cQISTimeout: true
@@ -275,14 +276,7 @@ export default class TestPage extends Component {
 
             } else {
 
-                Alert.alert(
-                    Strings.alertTitle,
-                    Strings.finishedQuestion,
-                    [
-                    {text: 'OK',  onPress: () => this.props.navigation.navigate("ResultPage",{'evaluation_id':this.state.evalution.evaluation_id,'passed_questions':this.state.passed_questions}), style: 'cancel'},
-                    ],
-                    { cancelable: true }
-                )            
+                this.props.navigation.navigate("ResultPage",{'evaluation_id':this.state.evalution.evaluation_id,'passed_questions':this.state.passed_questions,is_onlyview:false})                            
             }
         }
     }
@@ -307,7 +301,7 @@ export default class TestPage extends Component {
                             <View>
                                 <View style={Styles.viewExplain}>
                                     <View style={[Styles.viewRectRed,{backgroundColor: this.state.cQAnswer.correct ? Colors.greenColor:Colors.redColor}]}>
-                                        <Icon name='times'  type="FontAwesome" style={{color:Colors.whiteColor,fontSize:25}}/>
+                                        <Icon name= {this.state.cQAnswer.correct ? 'check':'times'}  type="FontAwesome" style={{color:Colors.whiteColor,fontSize:25}}/>
                                     </View>
                                     <View style={Styles.viewRect}>
                                         <Text style={Styles.textHint}>{this.state.cQISTimeout ? "TIME OUT" : this.state.cQAnswer.correct ? "GREAT!" :"NOT QUITE"}</Text>
@@ -315,7 +309,8 @@ export default class TestPage extends Component {
                                 </View>                      
                             
                                 <View style={Styles.viewExplainDetail}>
-                                    <Text style={Styles.textExplain}>{this.state.cQuestion.explain}</Text>
+                                    <HTML html={this.state.cQuestion.explain} imagesMaxWidth={Dimensions.get('window').width} />
+
                                 </View>
 
                                 <View style={Styles.viewExplain}>
@@ -328,7 +323,7 @@ export default class TestPage extends Component {
                                 </View>
 
                                 <View style={Styles.viewExplainDetail}>
-                                    <Text style={Styles.textRule}>{this.state.cQuestion.rule}</Text>
+                                    <HTML html={this.state.cQuestion.rule} imagesMaxWidth={Dimensions.get('window').width} />
                                 </View>
                             </View>
                         }
@@ -337,7 +332,7 @@ export default class TestPage extends Component {
                     <View style={Styles.viewNext}>
                         <TouchableOpacity onPress={this.pressNext.bind(this)}>
                             <View style={Styles.viewNextButton}>
-                                <Icon name='angle-right'  type="FontAwesome" style={{color:Colors.whiteColor,fontSize:25}}/>
+                                <Icon name={this.state.evalution.questions.length <= this.state.cQIndex + 1 ? 'sign-out':'angle-right'}  type="FontAwesome" style={{color:Colors.whiteColor,fontSize:25}}/>
                             </View>
                         </TouchableOpacity>
                     </View>

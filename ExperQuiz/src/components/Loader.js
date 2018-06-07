@@ -2,12 +2,10 @@ import React, { Component } from 'react';
 import {
   StyleSheet,
   View,
-  Modal,
   ActivityIndicator
 } from 'react-native';
 import Spinner from "react-native-spinkit";
 import {Colors} from '@theme';
-import Text from "./Text";
 const Loader = props => {
     const {
         loading,
@@ -15,33 +13,27 @@ const Loader = props => {
     } = props;
 
     return (
-        <Modal
-            transparent={true}
-            animationType={'fade'}
-            visible={loading}
-            onRequestClose={() => {console.log('close modal')}}>
+        <View>
+            { loading ? 
             <View style={styles.modalBackground}>
                 <View style={styles.activityIndicatorWrapper}>
-                    <Spinner isVisible={loading} size={60} type='FadingCircle'/>
-                    <Text>Please wait</Text>
+                    <Spinner isVisible={loading} size={30} type='FadingCircle'/>
                 </View>
-            </View>
-        </Modal>
+            </View> 
+            : null}
+        </View>
     )
 }
 
 const styles = StyleSheet.create({
     modalBackground: {
-        flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: Colors.lightGrayColor,
     },
 
     activityIndicatorWrapper: {
-        backgroundColor: '#FFFFFF',
-        height: 180,
-        width: 180,
+        height: 50,
+        width: 50,
         borderRadius: 5,
         display: 'flex',
         alignItems: 'center',

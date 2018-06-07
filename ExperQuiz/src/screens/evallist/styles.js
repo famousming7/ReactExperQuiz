@@ -63,17 +63,29 @@ export default {
         color:Colors.whiteColor,
         fontSize:16
     },
-
+    deleteIcon:{
+        width:'100%',
+        height:'100%',
+        justifyContent:'center',
+        alignItems:'center',
+    },
     viewQuestionType:{
         flex:1,
         height:40,
         justifyContent:'center',
-        
+        flexDirection:'column'
     },
     textQuestionType:{
         marginLeft:20,
         color:Colors.blueColor,
         fontSize:16,
+        fontWeight:'bold'
+    },
+    textPassResult:{
+        marginLeft:20,
+        marginTop:2,
+        color:Colors.grayColor,
+        fontSize:13,
         fontWeight:'bold'
     },
 

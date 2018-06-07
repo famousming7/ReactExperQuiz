@@ -12,7 +12,9 @@ export default {
     },
     avoidView:{
         width:'100%',
-        height:'100%'
+        height:'100%',
+        backgroundColor:Colors.whiteColor,
+        paddingTop:100
     },
     viewlogo:{
         width:'100%',

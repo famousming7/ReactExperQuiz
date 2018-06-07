@@ -20,6 +20,7 @@ const mobileToken = "mobile_token"
 const emailAddress = "email_address"
 const userInfo = "user_info"
 const key_evaluationList = "evaluation_list"
+const PASSED_EVALUATIONS = "passed_evaluations"
 
 export async function getJSONwithCache(url, fromCached = false){
     if (fromCached) {
@@ -91,7 +92,7 @@ export async function checkLogin(email,password, fromCached = false) {
     if (response.status == "ok") {
         /// Save Token in app syncStorage
         AsyncStorage.setItem(mobileToken, response.mobile_token)
-        AsyncStorage.setItem(userInfo, response)
+        AsyncStorage.setItem(userInfo, JSON.stringify(response))
         AsyncStorage.setItem(emailAddress, email)
     }
     return response
@@ -104,15 +105,13 @@ export async function getEmail(){
 
 export async function getUserInfo(){
 
-    let userinfo = await AsyncStorage.getItem(userInfo)
-
+    let userinfo = JSON.parse(await AsyncStorage.getItem(userInfo))
     return userinfo == null ? {enterprise_name:"My Company",first_name:"First",last_name:"last"} : userinfo
 }
 
 export async function checkLoginToken(){
 
     myToken = await AsyncStorage.getItem(mobileToken)
-    console.log("saved token : " + myToken)
     if (myToken == null){
         return ""
     } else {
@@ -142,7 +141,6 @@ export async function getEvalsListFromApi(){
 
         let newItems = await getJSONwithCache(url);
         let arrays =  await getEvalsArrayFrom(newItems)
-        console.log("questions",arrays)
         AsyncStorage.setItem(key_evaluationList,JSON.stringify(arrays))
 
         return arrays
@@ -180,10 +178,40 @@ export async function postAnswers(evalution_id,passed_questions, fromCached = fa
             "passed_questions":passed_questions
         }
     };
-    console.log(postData)
+
     let url = API_POST_ANSWERS + myToken
     let response =  await postJSON(url, postData);
-    console.log(response)
 
+    if (response != null && response.status =="ok"){
+        savePassedEvaluation(evalution_id,passed_questions)
+    }
     return response
+} 
+
+export async function savePassedEvaluation(evalution_id,passed_questions) {
+
+    const myToken = await AsyncStorage.getItem(mobileToken)
+    let postData = {
+        "evaluation_id":evalution_id,
+        "mobile_token":myToken,
+        "passed_questions":passed_questions
+    };
+
+    var passedEvals = []
+    let evals = await AsyncStorage.getItem(PASSED_EVALUATIONS)
+    if (evals != null){
+        passedEvals = JSON.parse(evals)
+    }
+    passedEvals.push(postData)
+    await AsyncStorage.setItem(PASSED_EVALUATIONS,JSON.stringify(passedEvals))
+}
+
+export async function getPassedEvaluations() {
+    var passedEvals = []
+    let evals = await AsyncStorage.getItem(PASSED_EVALUATIONS)
+    if (evals != null){
+        passedEvals = JSON.parse(evals)
+    }
+
+    return passedEvals
 }

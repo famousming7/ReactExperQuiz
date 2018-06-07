@@ -15,7 +15,7 @@ const BackIcon = ({ navigate }) => {
     return (
         <Button  
             style={{backgroundColor: Colors.whiteColor,margin: 5}}
-            onPress={() => navigate('Evallist')}>
+            onPress={() => navigate('Evallist',{'update':1})}>
             <Icon name='chevron-left'  type="FontAwesome" style={{color:Colors.redColor,fontSize:25}}/>
         </Button>
     );
@@ -72,16 +72,19 @@ export default class ResultPage extends Component {
             totalScore:totalScore,
             success:successPercent,
             timespent:timespent,
-            loaderVisible:false
+            loaderVisible:false,
+            is_onlyview: props.navigation.getParam('is_onlyview')
         });
     }
 
     async componentDidMount(){
 
-        this.setState({loaderVisible: true})
-        let posted = await postAnswers(this.state.evaluation_id,this.state.passed_questions)
-        console.log(posted)
-        this.setState({loaderVisible:false})
+        if (!this.state.is_onlyview) {
+            this.setState({loaderVisible: true})
+            let posted = await postAnswers(this.state.evaluation_id,this.state.passed_questions)
+            console.log(posted)
+            this.setState({loaderVisible:false})
+        }
     }
 
     componentWillUnmount() {

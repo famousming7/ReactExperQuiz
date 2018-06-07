@@ -15,7 +15,7 @@ import {
 
 import {Colors,Images} from '@theme';
 import Styles from './styles';
-import { Loader,Strings } from '@components';
+import { ModalLoader,Strings } from '@components';
 import { checkLogin, getEmail,API_URL_SIGNIN} from "@api";
 
 export default class Login extends Component {
@@ -25,7 +25,7 @@ export default class Login extends Component {
 
         this.state = ({
             loaderVisible: false,
-            email:"",
+            email:"patrice@experquiz.com",
             password:"Aebuu6ai"
         })
     }
@@ -94,10 +94,10 @@ export default class Login extends Component {
     render() {
 
         return (
-            <KeyboardAvoidingView style={Styles.avoidView} behavior="position">
+            <KeyboardAvoidingView keyboardVerticalOffset={Platform.select({ios: -100, android: 500})} behavior={(Platform.OS === 'ios')? "padding" : null}>
                 <View style={Styles.container}>
                     
-                    <Loader loading={this.state.loaderVisible}/>                     
+                    <ModalLoader loading={this.state.loaderVisible}/>                     
                     <View style={Styles.viewlogo}>
                         <Image style={Styles.imgLogo} source={Images.logo}/>
                     </View>
