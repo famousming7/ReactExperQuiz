@@ -36,7 +36,7 @@ export default {
         borderWidth:0.3,
         borderColor:Colors.grayColor,        
         shadowColor:Colors.blackColor,
-        shadowOffset:{width:0,height:0},
+        shadowOffset:{width:0.5,height:0.5},
         shadowOpacity:0.2,
         flexDirection:'row'
     },

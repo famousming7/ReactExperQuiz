@@ -25,7 +25,7 @@ const BackIcon = ({ giveUp }) => {
             style={{backgroundColor: Colors.whiteColor,margin: 5}}
             onPress={() => 
                 Alert.alert(
-                    Strings.alertTitle,
+                    "",
                     Strings.giveUp,
                     [
                     {text: 'YES',  onPress: () => giveUp(), style: 'cancel'},
@@ -226,7 +226,7 @@ export default class TestPage extends Component {
         for (answer of this.state.cQuestion.nanswers){
 
             let mAnswer = answer
-            backColor = Colors.whiteColor
+            backColor = Colors.grayColor
             leftBorderWidth = 0.3
             if (this.state.cQAnswered){
                 if (answer.correct){
@@ -244,8 +244,8 @@ export default class TestPage extends Component {
 
                 <TouchableOpacity onPress={()=>this.selectAnswer(mAnswer)} key={answer.answer_text}>
                     <View style={[Styles.viewItemAnswer,{borderLeftWidth:leftBorderWidth,borderColor:backColor}]} key={answer.answer_text}>               
-                                
-                        <Text style={Styles.textItemAnswer} >{answer.answer_text}</Text>
+                        <HTML html={answer.answer_text} imagesMaxWidth={Dimensions.get('window').width} />                                
+                        {/* <Text style={Styles.textItemAnswer} >{answer.answer_text}</Text> */}
                     </View>
                 </TouchableOpacity>
             )
@@ -290,7 +290,7 @@ export default class TestPage extends Component {
                     <ScrollView style={Styles.scrollAnswers}>
 
                         <View style={Styles.viewQuestion}>
-                            <Text >{this.state.cQuestion.question_text}</Text>
+                            <HTML html={this.state.cQuestion.question_text} imagesMaxWidth={Dimensions.get('window').width} />
                         </View>
 
                         <View style={Styles.viewListAnswers}>
@@ -301,7 +301,7 @@ export default class TestPage extends Component {
                             <View>
                                 <View style={Styles.viewExplain}>
                                     <View style={[Styles.viewRectRed,{backgroundColor: this.state.cQAnswer.correct ? Colors.greenColor:Colors.redColor}]}>
-                                        <Icon name= {this.state.cQAnswer.correct ? 'check':'times'}  type="FontAwesome" style={{color:Colors.whiteColor,fontSize:25}}/>
+                                        <Icon name= {this.state.cQISTimeout ? 'hourglass-end': this.state.cQAnswer.correct ? 'check':'times'}  type="FontAwesome" style={{color:Colors.whiteColor,fontSize:25}}/>
                                     </View>
                                     <View style={Styles.viewRect}>
                                         <Text style={Styles.textHint}>{this.state.cQISTimeout ? "TIME OUT" : this.state.cQAnswer.correct ? "GREAT!" :"NOT QUITE"}</Text>
@@ -315,7 +315,7 @@ export default class TestPage extends Component {
 
                                 <View style={Styles.viewExplain}>
                                     <View style={Styles.viewRectGray}>
-                                        <Icon name='times'  type="FontAwesome" style={{color:Colors.whiteColor,fontSize:25}}/>
+                                        <Icon name='book'  type="FontAwesome" style={{color:Colors.whiteColor,fontSize:25}}/>
                                     </View>
                                     <View style={Styles.viewRect}>
                                         <Text style={Styles.textHint}>RULE</Text>

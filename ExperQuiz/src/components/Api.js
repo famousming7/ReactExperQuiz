@@ -11,7 +11,7 @@ import {
 //const API_ROOT = "http://www.experquiz.com/mobile"
 const API_ROOT = "http://backup.experquiz.com/mobile"
 const API_SIGNIN            = API_ROOT + "/signin"
-const API_LOGOUT            = API_ROOT + "/lotout/"
+const API_LOGOUT            = API_ROOT + "/logout/"
 const API_EVALUTION_LIST    = API_ROOT + "/evals/"
 const API_POST_ANSWERS      = API_ROOT + "/evals/"
 export const API_URL_SIGNIN        = "http://www.experquiz.com/en/?signin=true"
@@ -58,6 +58,7 @@ export async function postJSON(url, json) {
         return responseJson
     } catch (error) {
         console.log("error", error)
+        return null
     }
     return null        
 }
@@ -67,6 +68,7 @@ export async function postJSONwithFormData(url, formData) {
     try {
         let response = await fetch(url, {
             method: 'POST',
+            timeout: 5000,
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'multipart/form-data',
@@ -77,6 +79,7 @@ export async function postJSONwithFormData(url, formData) {
         return responseJson
     } catch (error) {
         console.log("error", error)
+        return null
     }
     return null        
 }
@@ -86,16 +89,16 @@ export async function checkLogin(email,password, fromCached = false) {
     let formdata = new FormData();
     formdata.append("email",email);
     formdata.append("password",password);
-
     let response =  await postJSONwithFormData(API_SIGNIN, formdata);
     console.log(response)
-    if (response.status == "ok") {
+    if (response != null && response.status == "ok") {
         /// Save Token in app syncStorage
         AsyncStorage.setItem(mobileToken, response.mobile_token)
         AsyncStorage.setItem(userInfo, JSON.stringify(response))
         AsyncStorage.setItem(emailAddress, email)
     }
     return response
+
 }
 
 export async function getEmail(){
@@ -134,8 +137,8 @@ export async function getEvalsListFromApi(){
         return []
     } else {
         
-        //let timeStamp = Date.now()
-        let timeStamp = "1527932622"
+        let timeStamp = parseInt( Date.now() / 1000)
+       // let timeStamp = "1527932622"
         let url = API_EVALUTION_LIST + myToken + "/" + timeStamp
         console.log(url)
 
@@ -186,7 +189,7 @@ export async function postAnswers(evalution_id,passed_questions, fromCached = fa
         savePassedEvaluation(evalution_id,passed_questions)
     }
     return response
-} 
+}
 
 export async function savePassedEvaluation(evalution_id,passed_questions) {
 

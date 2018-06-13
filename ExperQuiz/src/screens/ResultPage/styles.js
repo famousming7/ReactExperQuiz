@@ -7,13 +7,17 @@ export default {
         paddingTop:0,
         flexDirection: 'column',
         width:'100%',
-        backgroundColor:Colors.lightGrayColor
+        backgroundColor:Colors.lightGrayColor,
+        justifyContent:'center'
     },
-
+    viewTop:{
+        width:'100%',
+        alignItems:'center', 
+    },
     viewQuestion:{
         marginTop:25,
         width:'100%',
-        alignItems:'center'
+        alignItems:'center',        
     },
 
     textQuestion:{

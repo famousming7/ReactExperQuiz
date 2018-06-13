@@ -30,7 +30,7 @@ const EvalListWithMenu = createDrawerNavigator(
     },
     {
         
-        drawerWidth: 200,
+        drawerWidth: 160,
         contentComponent: props => <Sidemenu {...props} />
     }
 );

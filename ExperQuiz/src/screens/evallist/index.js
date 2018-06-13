@@ -6,17 +6,16 @@ import {
     FlatList,
     TouchableOpacity,
     BackHandler,
-    ToastAndroid
+    NetInfo
 } from 'react-native';
 
 
 import { Icon,Button} from 'native-base';
-import {Colors,Images} from '@theme';
+import {Colors} from '@theme';
 import Styles from './styles';
 import { Loader,Strings ,LogoIcon} from '@components';
-import { getEvalsListFromApi ,getUserInfo, getPassedEvaluations} from "@api";
-import { DrawerNavigator } from "react-navigation";
-import { copy} from "@utils";
+import { getEvalsListFromApi ,getUserInfo, getPassedEvaluations, checkNetworkStatus} from "@api";
+
 
 const MenuIcon = ({ navigate , openDrawer}) => {
     return (
@@ -48,7 +47,8 @@ export default class Evallist extends Component {
             loaderVisible: false,
             evaluationsArray: [],
             enterprise_name:"",
-            passedEvaluations:[]
+            passedEvaluations:[],
+            isOnline : false
         })
 
         this.props.navigation.setParams({
@@ -58,8 +58,15 @@ export default class Evallist extends Component {
 
     async componentDidMount(){
         
+        NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectionChange);
+        NetInfo.isConnected.fetch().then(isConnected =>{
+            this.setState({
+                isOnline: isConnected
+            })
+        });
+
         BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
-        this.getNewList()
+        
         userinfo = await getUserInfo()
         this.setState({
             enterprise_name: userinfo.enterprise_name == null ? "My Company": userinfo.enterprise_name
@@ -67,7 +74,20 @@ export default class Evallist extends Component {
         this.props.navigation.setParams({
             enterprise_name: userinfo.enterprise_name == null ? "My Company": userinfo.enterprise_name
         })
-        
+
+        await this.getNewList()
+    }
+
+    componentWillUnmount() {
+        BackHandler.removeEventListener('hardwareBackPress', this.handleBackButton);
+        NetInfo.isConnected.removeEventListener('connectionChange', this.handleConnectionChange);
+    }
+
+    handleConnectionChange = (isConnected) => {
+
+        this.setState({
+            isOnline: isConnected
+        })
     }
     
     async componentWillReceiveProps(){
@@ -78,30 +98,37 @@ export default class Evallist extends Component {
 
     }
 
-    componentWillUnmount() {
-         BackHandler.removeEventListener('hardwareBackPress', this.handleBackButton);
-    }
-
     handleBackButton() {
         //ToastAndroid.show('Back button is pressed', ToastAndroid.SHORT);
+        Alert.alert(
+            "",
+            Strings.exitApp,
+            [
+                {text: 'YES',  onPress: () => {
+                    BackHandler.exitApp();
+                }, style: 'cancel'},
+                {text: 'NO',  onPress: () => console.log('cancel'), style: 'cancel'},
+            ],
+            { cancelable: true }
+        )         
         return true;
     }
+
     async getNewList(){
 
         this.setState({loaderVisible: true})
         let newList = await getEvalsListFromApi()
         this.setState({
-             evaluationsArray:newList,
-             loaderVisible:false
-         })
-
+            evaluationsArray:newList,
+            loaderVisible:false
+        })
     }
 
 
     deleteEvalution(evaluation,index) {
 
         Alert.alert(
-            Strings.alertTitle,
+            "",
             Strings.sureToRemove,
             [
             {text: 'YES',  onPress: () => {

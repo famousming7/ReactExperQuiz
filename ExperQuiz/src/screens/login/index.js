@@ -16,7 +16,7 @@ import {
 import {Colors,Images} from '@theme';
 import Styles from './styles';
 import { ModalLoader,Strings } from '@components';
-import { checkLogin, getEmail,API_URL_SIGNIN} from "@api";
+import { checkLogin, getEmail, API_URL_SIGNIN} from "@api";
 
 export default class Login extends Component {
 
@@ -26,7 +26,8 @@ export default class Login extends Component {
         this.state = ({
             loaderVisible: false,
             email:"patrice@experquiz.com",
-            password:"Aebuu6ai"
+            password:"Aebuu6ai",
+            isOnline : false
         })
     }
 
@@ -34,7 +35,26 @@ export default class Login extends Component {
         this.setState({
             email: await getEmail()
         })
+
+        NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectionChange);
+        NetInfo.isConnected.fetch().then(isConnected =>{
+            this.setState({
+                isOnline: isConnected
+            })
+        });
+        
     }
+    componentWillUnmount() {
+        NetInfo.isConnected.removeEventListener('connectionChange', this.handleConnectionChange);
+    }
+
+    handleConnectionChange = (isConnected) => {
+        alert(isConnected)
+        this.setState({
+            isOnline: isConnected
+        })
+    }
+
     changeEmail(text){
         this.setState({
             email:text
@@ -53,42 +73,58 @@ export default class Login extends Component {
     }
 
     async onPressSignIn(){
-        this.setState({loaderVisible: true})
-        console.log("email: ",this.state.email);
-        console.log("password: ",this.state.password);
-        let response = await checkLogin(this.state.email, this.state.password)
-        this.setState({loaderVisible: false})
 
-        setTimeout(()=>{            
-            if (response == null){
+        if (this.state.isOnline){
 
-                Alert.alert(
-                    Strings.alertTitle,
-                    Strings.networkError,
-                    [
-                    {text: 'OK',  onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
-                    ],
-                    { cancelable: true }
-                )
-            } else {
+            this.setState({loaderVisible: true})
+            console.log("email: ",this.state.email);
+            console.log("password: ",this.state.password);
+            let response = await checkLogin(this.state.email.toLowerCase(), this.state.password)
+            this.setState({loaderVisible: false})
 
-                if (response.status == "ok" && response.message==null) {
-                    
-                    this.props.navigation.navigate("EvallistMenu")
-
-                } else {
-
+            setTimeout(()=>{            
+                if (response == null){
+    
                     Alert.alert(
-                        'ExpertQuiz',
-                        Strings.loginFailed,
+                        "",
+                        Strings.networkError,
                         [
                         {text: 'OK',  onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
                         ],
                         { cancelable: true }
                     )
+                } else {
+    
+                    if (response.status == "ok" && response.message==null) {
+                        
+                        this.props.navigation.navigate("EvallistMenu")
+    
+                    } else {
+    
+                        Alert.alert(
+                            '',
+                            Strings.loginFailed,
+                            [
+                            {text: 'OK',  onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
+                            ],
+                            { cancelable: true }
+                        )
+                    }
                 }
-            }
-        }, 200);
+            }, 200);
+
+        } else {
+
+            Alert.alert(
+                "",
+                Strings.networkError,
+                [
+                {text: 'OK',  onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
+                ],
+                { cancelable: true }
+            )
+        }      
+     
     }
 
     render() {

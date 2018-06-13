@@ -3,7 +3,8 @@ import {
     View,
     Alert,
     Image,
-    BackHandler
+    BackHandler,
+    NetInfo
 } from 'react-native';
 
 import { Button, Icon, Text} from 'native-base';
@@ -79,6 +80,20 @@ export default class ResultPage extends Component {
 
     async componentDidMount(){
 
+        NetInfo.isConnected.fetch().then(async(isConnected) =>{        
+
+            if (isConnected) {
+               await this.postAnswer()
+            }
+        });
+    }
+
+    componentWillUnmount() {
+        BackHandler.removeEventListener('hardwareBackPress', this.handleBackButton);
+    }
+
+    async postAnswer(){
+        
         if (!this.state.is_onlyview) {
             this.setState({loaderVisible: true})
             let posted = await postAnswers(this.state.evaluation_id,this.state.passed_questions)
@@ -87,12 +102,8 @@ export default class ResultPage extends Component {
         }
     }
 
-    componentWillUnmount() {
-        BackHandler.removeEventListener('hardwareBackPress', this.handleBackButton);
-    }
-
     handleBackButton() {
-        ToastAndroid.show('Back button is pressed', ToastAndroid.SHORT);
+        this.props.navigation.navigate('Evallist',{'update':1})  
         return true;
     }
 
@@ -101,7 +112,7 @@ export default class ResultPage extends Component {
         return (
             <View style={Styles.container}>
                 <Loader loading={this.state.loaderVisible}/>
-                <View style={Styles.viewQuestion}>
+                <View style={Styles.viewTop}>
                     <Text style={Styles.textQuestion}>QUESTION</Text>
                 </View>
 
