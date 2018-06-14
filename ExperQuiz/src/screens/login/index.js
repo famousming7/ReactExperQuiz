@@ -25,8 +25,8 @@ export default class Login extends Component {
 
         this.state = ({
             loaderVisible: false,
-            email:"patrice@experquiz.com",
-            password:"Aebuu6ai",
+            email:"",
+            password:"",
             isOnline : false
         })
     }

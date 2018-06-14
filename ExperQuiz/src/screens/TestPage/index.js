@@ -247,7 +247,7 @@ export default class TestPage extends Component {
 
                 <TouchableOpacity onPress={()=>this.selectAnswer(mAnswer)} key={answer.answer_text}>
                     <View style={[Styles.viewItemAnswer,{borderLeftWidth:leftBorderWidth,borderColor:backColor}]} key={answer.answer_text}>
-                        <HTML html={answer.answer_text} imagesMaxWidth={Dimensions.get('window').width} />
+                        <HTML html={answer.answer_text ? answer.answer_text: " "} imagesMaxWidth={Dimensions.get('window').width} />
                         {/* <Text style={Styles.textItemAnswer} >{answer.answer_text}</Text> */}
                     </View>
                 </TouchableOpacity>
@@ -293,7 +293,7 @@ export default class TestPage extends Component {
                     <ScrollView style={Styles.scrollAnswers}>
 
                         <View style={Styles.viewQuestion}>
-                            <HTML html={this.state.cQuestion.question_text } imagesMaxWidth={Dimensions.get('window').width} />
+                            <HTML html={this.state.cQuestion.question_text ? this.state.cQuestion.question_text: " "} imagesMaxWidth={Dimensions.get('window').width} />
                         </View>
 
                         <View style={Styles.viewListAnswers}>

@@ -17,6 +17,7 @@ import { Loader,Strings ,LogoIcon} from '@components';
 import { getEvalsListFromApi ,getUserInfo, getPassedEvaluations, getPostedEvalutionIds,getEvalsListFromLocal,postUnpostedAnswers,deleteEval} from "@api";
 import { copy } from '@utils';
 
+const Refresh_Seconds = 60000;
 const MenuIcon = ({ navigate , openDrawer}) => {
     return (
         <Button
@@ -89,7 +90,7 @@ export default class Evallist extends Component {
             if(this.state.isOnline){
                 await this.getNewListFromAPI()
             }
-        },60000) // 60 seconds
+        },Refresh_Seconds) // 60 seconds
 
     }
 
