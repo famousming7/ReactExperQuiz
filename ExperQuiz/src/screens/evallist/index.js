@@ -89,7 +89,7 @@ export default class Evallist extends Component {
             if(this.state.isOnline){
                 await this.getNewListFromAPI()
             }
-        },60000) // 1 mins
+        },30000) // 30 seconds
         
     }
 

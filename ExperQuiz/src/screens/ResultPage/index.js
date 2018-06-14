@@ -81,7 +81,7 @@ export default class ResultPage extends Component {
     }
 
     async componentDidMount(){
-
+        BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
         NetInfo.isConnected.fetch().then(async(isConnected) =>{        
 
             if (isConnected) {
