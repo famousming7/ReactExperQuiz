@@ -6,7 +6,7 @@ import {
     TouchableOpacity,
     Image,
     BackHandler,
-    Dimensions 
+    Dimensions
 } from 'react-native';
 import * as Progress from 'react-native-progress';
 import HTML from 'react-native-render-html';
@@ -21,9 +21,9 @@ const ANIMATION_TIMEOUT = 50;
 
 const BackIcon = ({ giveUp }) => {
     return (
-        <Button  
+        <Button
             style={{backgroundColor: Colors.whiteColor,margin: 5}}
-            onPress={() => 
+            onPress={() =>
                 Alert.alert(
                     "",
                     Strings.giveUp,
@@ -32,7 +32,7 @@ const BackIcon = ({ giveUp }) => {
                     {text: 'NO',  onPress: () => console.log('cancel'), style: 'cancel'},
                     ],
                     { cancelable: true }
-                ) 
+                )
             }>
             <Icon name='chevron-left'  type="FontAwesome" style={{color:Colors.redColor,fontSize:25}}/>
         </Button>
@@ -44,7 +44,7 @@ const TitleView =  ({ index,total ,remaining,timing}) => {
         <View style={{width:'100%',height:'100%',justifyContent:'center',alignItems:"center"}}>
             <View style={{flex:1,justifyContent:'center'}}>
                 <Text style={{fontSize:20,color:Colors.blueColor,fontWeight:'bold'}}>{index>=0 ?index+1:""} / {total>=0 ? total:""}</Text>
-            </View>            
+            </View>
             <View style={{height:13,width:'100%'}}>
                 <Progress.Bar progress={timing>0 ? (timing-remaining)/timing: 0.01} width={null} color = {Colors.blueColor} borderRadius = {2}/>
             </View>
@@ -63,7 +63,7 @@ const LogoIcon = ({ navigate }) => {
 
 export default class TestPage extends Component {
 
-    
+
     static navigationOptions = ({ navigation }) => {
         const {state} = navigation;
 
@@ -103,7 +103,7 @@ export default class TestPage extends Component {
     }
 
     componentWillMount(){
-        BackHandler.addEventListener('hardwareBackPress', () => {return true});
+        BackHandler.addEventListener('hardwareBackPress',  this.handleBackButton);
         if(this.state.evalution.questions.length > 0){
 
             this.setState({
@@ -113,7 +113,7 @@ export default class TestPage extends Component {
                 cQRemaining:this.state.evalution.questions[0].timing
             });
             setTimeout(() => {
-              
+
                 this.setNavigationValues()
                 this.startTimer()
             }, ANIMATION_TIMEOUT);
@@ -127,23 +127,24 @@ export default class TestPage extends Component {
                   {text: 'Back',  onPress: () => this.props.navigation.goBack(), style: 'cancel'},
                 ],
                 { cancelable: true }
-            )            
+            )
         }
     }
 
     componentWillUnmount() {
+
         BackHandler.removeEventListener('hardwareBackPress', this.handleBackButton);
     }
 
     handleBackButton() {
-        ToastAndroid.show('Back button is pressed', ToastAndroid.SHORT);
+        
         return true;
     }
 
     giveUp(){
 
         clearInterval(this.countTimer)
-        this.props.navigation.goBack()
+        this.props.navigation.navigate('Evallist',{'update':1})
     }
 
     setNavigationValues(){
@@ -159,6 +160,8 @@ export default class TestPage extends Component {
 
     startTimer(){
 
+        this.setNavigationValues()
+        
         if (this.state.cQTiming > 0){
             this.countTimer = setInterval(()=>{
                 if(this.state.cQRemaining<=0){
@@ -176,7 +179,7 @@ export default class TestPage extends Component {
                         cQRemaining : this.state.cQRemaining - 1
                     })
 
-                    setTimeout(() => {                    
+                    setTimeout(() => {
                         this.setNavigationValues()
                     }, ANIMATION_TIMEOUT)
                 }
@@ -200,7 +203,7 @@ export default class TestPage extends Component {
         this.setState({
             passed_questions: passed
         })
-        
+
         setTimeout(() => {
             console.log(this.state.passed_questions)
         }, ANIMATION_TIMEOUT);
@@ -208,7 +211,7 @@ export default class TestPage extends Component {
 
 
     selectAnswer(answer){
-        
+
         if (!this.state.cQAnswered) {
             this.setState({
                 cQAnswer :answer,
@@ -243,8 +246,8 @@ export default class TestPage extends Component {
             listItems.push(
 
                 <TouchableOpacity onPress={()=>this.selectAnswer(mAnswer)} key={answer.answer_text}>
-                    <View style={[Styles.viewItemAnswer,{borderLeftWidth:leftBorderWidth,borderColor:backColor}]} key={answer.answer_text}>               
-                        <HTML html={answer.answer_text} imagesMaxWidth={Dimensions.get('window').width} />                                
+                    <View style={[Styles.viewItemAnswer,{borderLeftWidth:leftBorderWidth,borderColor:backColor}]} key={answer.answer_text}>
+                        <HTML html={answer.answer_text} imagesMaxWidth={Dimensions.get('window').width} />
                         {/* <Text style={Styles.textItemAnswer} >{answer.answer_text}</Text> */}
                     </View>
                 </TouchableOpacity>
@@ -256,7 +259,7 @@ export default class TestPage extends Component {
     pressNext(){
 
         if (this.state.cQAnswered){
-                    
+
             if(this.state.evalution.questions.length > this.state.cQIndex + 1){
 
                 let qIndex = this.state.cQIndex + 1
@@ -265,18 +268,18 @@ export default class TestPage extends Component {
                     cQIndex:qIndex,
                     cQTiming:this.state.evalution.questions[qIndex].timing,
                     cQRemaining:this.state.evalution.questions[qIndex].timing,
-                    cQAnswered:false,   
-                    cQISTimeout:false                 
+                    cQAnswered:false,
+                    cQISTimeout:false
                 });
 
                 setTimeout(() => {
-                
+
                     this.startTimer()
                 }, ANIMATION_TIMEOUT);
 
             } else {
 
-                this.props.navigation.navigate("ResultPage",{'evaluation_id':this.state.evalution.evaluation_id,'passed_questions':this.state.passed_questions,is_onlyview:false})                            
+                this.props.navigation.navigate("ResultPage",{'evaluation_id':this.state.evalution.evaluation_id,'passed_questions':this.state.passed_questions,is_onlyview:false})
             }
         }
     }
@@ -284,9 +287,9 @@ export default class TestPage extends Component {
 
         return (
             <View style={Styles.container}>
-                
+
                 <View style={Styles.viewAnswers}>
-                    
+
                     <ScrollView style={Styles.scrollAnswers}>
 
                         <View style={Styles.viewQuestion}>
@@ -306,8 +309,8 @@ export default class TestPage extends Component {
                                     <View style={Styles.viewRect}>
                                         <Text style={Styles.textHint}>{this.state.cQISTimeout ? "TIME OUT" : this.state.cQAnswer.answer_correct ? "GREAT!" :"NOT QUITE"}</Text>
                                     </View>
-                                </View>                      
-                            
+                                </View>
+
                                 <View style={Styles.viewExplainDetail}>
                                     <HTML html={this.state.cQuestion.explain ? this.state.cQuestion.explain : " "} imagesMaxWidth={Dimensions.get('window').width} />
 

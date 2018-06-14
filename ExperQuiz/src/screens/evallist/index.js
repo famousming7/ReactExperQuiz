@@ -19,7 +19,7 @@ import { copy } from '@utils';
 
 const MenuIcon = ({ navigate , openDrawer}) => {
     return (
-        <Button  
+        <Button
             style={{backgroundColor: Colors.whiteColor,margin: 5}}
             onPress={() => openDrawer()}>
             <Icon name='bars' type="FontAwesome" style={{color:Colors.redColor}} fontSize={13}/>
@@ -62,7 +62,7 @@ export default class Evallist extends Component {
     async componentDidMount(){
         NetInfo.isConnected.addEventListener('connectionChange', await this.handleConnectionChange);
         NetInfo.isConnected.fetch().then(async(isConnected) =>{
-            
+
             this.setState({
                 isOnline: isConnected
             })
@@ -72,8 +72,8 @@ export default class Evallist extends Component {
             }
         });
 
-        BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
-        
+
+
         userinfo = await getUserInfo()
         this.setState({
             enterprise_name: userinfo.enterprise_name == null ? "My Company": userinfo.enterprise_name,
@@ -89,8 +89,8 @@ export default class Evallist extends Component {
             if(this.state.isOnline){
                 await this.getNewListFromAPI()
             }
-        },30000) // 30 seconds
-        
+        },60000) // 60 seconds
+
     }
 
     componentWillUnmount() {
@@ -108,14 +108,14 @@ export default class Evallist extends Component {
         if (isConnected){
             await this.getNewListFromAPI()
             await postUnpostedAnswers()
-            
+
         } else {
             await this.getListFromLocal()
-            
+
         }
         await this.getPassAndPostedEvals()
     }
-    
+
     async getPassAndPostedEvals(){
         this.setState({
             passedEvaluations: await getPassedEvaluations(),
@@ -123,8 +123,9 @@ export default class Evallist extends Component {
         })
     }
     async componentWillReceiveProps(){
-
-        await this.getPassAndPostedEvals() 
+      
+        BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
+        await this.getPassAndPostedEvals()
         setTimeout(() => {
             this.setState({
                 sortedEvaluationArray:this.reOrderEvalList(this.state.evaluationsArray)
@@ -144,7 +145,7 @@ export default class Evallist extends Component {
                 {text: 'NO',  onPress: () => console.log('cancel'), style: 'cancel'},
             ],
             { cancelable: true }
-        )         
+        )
         return true;
     }
 
@@ -170,14 +171,14 @@ export default class Evallist extends Component {
     }
 
     calcPendings(){
-        pendings = 0 
+        pendings = 0
         if(this.state.sortedEvaluationArray.length > 0){
             for (let obj of this.state.sortedEvaluationArray){
-                if (!this.checkAlreadyPassed(obj.evaluation_id )){                    
+                if (!this.checkAlreadyPassed(obj.evaluation_id )){
                     pendings++
                 }
             }
-        } 
+        }
         return pendings <= 1 ? pendings + " evalution" : pendings + " evaluations"
     }
 
@@ -194,26 +195,26 @@ export default class Evallist extends Component {
             {text: 'NO',  onPress: () => console.log('cancel'), style: 'cancel'},
             ],
             { cancelable: true }
-        ) 
+        )
     }
 
     reOrderEvalList(arrays){
-        
+
         let copyArray = copy(arrays)
         var sort1Arr = []
         var sort2Arr = []
         var sort3Arr = []
         if(copyArray.length > 0){
             for (let obj of copyArray){
-                if (this.checkAlreadyPosted(obj.evaluation_id )){                    
+                if (this.checkAlreadyPosted(obj.evaluation_id )){
                     sort3Arr.push(obj)
-                } else if (this.checkAlreadyPassed(obj.evaluation_id ) != false){    
+                } else if (this.checkAlreadyPassed(obj.evaluation_id ) != false){
                     sort2Arr.push(obj)
                 } else {
                     sort1Arr.push(obj)
                 }
             }
-        } 
+        }
 
         return [...sort1Arr, ...sort2Arr, ...sort3Arr]
     }
@@ -236,21 +237,21 @@ export default class Evallist extends Component {
     }
 
     pressEvaluation(evaluation) {
-        
+
         var arr = this.checkAlreadyPassed(evaluation.evaluation_id)
 
         if (arr == false || arr.length == 0 ) {
-            this.props.navigation.navigate("TestPage",{eval:evaluation})            
+            this.props.navigation.navigate("TestPage",{eval:evaluation})
         } else {
             this.props.navigation.navigate("ResultPage",{evalution_id:evaluation.evaluation_id,passed_questions:arr,is_onlyview:true})
         }
     }
 
     checkAlreadyPassed(evaluation_id){
-        
+
         if(this.state.passedEvaluations.length > 0){
             for (let obj of this.state.passedEvaluations){
-                if (obj.evaluation_id == evaluation_id){                    
+                if (obj.evaluation_id == evaluation_id){
                     return obj.passed_questions
                 }
             }
@@ -267,7 +268,7 @@ export default class Evallist extends Component {
         return (
             <TouchableOpacity style={Styles.viewQuestion} onPress={()=>this.pressEvaluation(item)}>
                 <View style={Styles.listitem}>
-                
+
                     <View style={[Styles.viewTopic,{'backgroundColor':item.topic_color}]}>
                         <Text style={Styles.textTopic}>{item.topic_short}</Text>
                     </View>
@@ -286,7 +287,7 @@ export default class Evallist extends Component {
                         <Icon name="play" type="FontAwesome" style={{color:Colors.blueColor,fontSize:14}} />
                         : null}
                     </View>
-                
+
                 </View>
             </TouchableOpacity>
         )

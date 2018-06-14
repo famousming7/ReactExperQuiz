@@ -16,7 +16,7 @@ import GestureRecognizer, {swipeDirections} from 'react-native-swipe-gestures';
 
 const BackIcon = ({ navigate }) => {
     return (
-        <Button  
+        <Button
             style={{backgroundColor: Colors.whiteColor,margin: 5}}
             onPress={() => navigate('Evallist',{'update':1})}>
             <Icon name='chevron-left'  type="FontAwesome" style={{color:Colors.redColor,fontSize:25}}/>
@@ -45,7 +45,7 @@ export default class ResultPage extends Component {
 
     constructor(props) {
         super(props);
-
+        this.backButtonListener  = null;
         let passed_questions =  props.navigation.getParam('passed_questions')
         let evaluation_id  =  props.navigation.getParam('evaluation_id')
 
@@ -81,8 +81,8 @@ export default class ResultPage extends Component {
     }
 
     async componentDidMount(){
-        BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
-        NetInfo.isConnected.fetch().then(async(isConnected) =>{        
+        this.backButtonListener = BackHandler.addEventListener('hardwareBackPress', ()=>{this.handleBackButton(this.props);return true});
+        NetInfo.isConnected.fetch().then(async(isConnected) =>{
 
             if (isConnected) {
                await this.postAnswer()
@@ -94,11 +94,12 @@ export default class ResultPage extends Component {
     }
 
     componentWillUnmount() {
-        BackHandler.removeEventListener('hardwareBackPress', this.handleBackButton);
+
+        this.backButtonListener.remove();
     }
 
     async postAnswer(){
-        
+
         if (!this.state.is_onlyview) {
             this.setState({loaderVisible: true})
             let posted = await postAnswers(this.state.evaluation_id,this.state.passed_questions)
@@ -107,17 +108,17 @@ export default class ResultPage extends Component {
         }
     }
 
-    handleBackButton() {
-        this.props.navigation.navigate('Evallist',{'update':1})  
+    handleBackButton(props) {
+        props.navigation.navigate('Evallist',{'update':1})
         return true;
     }
 
     onSwipeLeft(gestureState) {
-       
+
     }
-    
+
     onSwipeRight(gestureState) {
-        this.props.navigation.navigate('Evallist',{'update':1})  
+        this.props.navigation.navigate('Evallist',{'update':1})
     }
 
     render() {
