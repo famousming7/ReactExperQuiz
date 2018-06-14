@@ -49,7 +49,6 @@ export default class Login extends Component {
     }
 
     handleConnectionChange = (isConnected) => {
-        alert(isConnected)
         this.setState({
             isOnline: isConnected
         })

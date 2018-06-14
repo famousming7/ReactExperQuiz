@@ -216,7 +216,7 @@ export default class TestPage extends Component {
             })
             clearInterval(this.countTimer)
 
-            this.saveAnswers(answer.answer_text,answer.correct)
+            this.saveAnswers(answer.answer_text,answer.answer_correct)
         }
     }
 
@@ -229,7 +229,7 @@ export default class TestPage extends Component {
             backColor = Colors.grayColor
             leftBorderWidth = 0.3
             if (this.state.cQAnswered){
-                if (answer.correct){
+                if (answer.answer_correct){
                     leftBorderWidth = 3
                     backColor = Colors.greenColor
                 } else {
@@ -290,7 +290,7 @@ export default class TestPage extends Component {
                     <ScrollView style={Styles.scrollAnswers}>
 
                         <View style={Styles.viewQuestion}>
-                            <HTML html={this.state.cQuestion.question_text} imagesMaxWidth={Dimensions.get('window').width} />
+                            <HTML html={this.state.cQuestion.question_text } imagesMaxWidth={Dimensions.get('window').width} />
                         </View>
 
                         <View style={Styles.viewListAnswers}>
@@ -300,16 +300,16 @@ export default class TestPage extends Component {
                         { this.state.cQAnswered == false ? null :
                             <View>
                                 <View style={Styles.viewExplain}>
-                                    <View style={[Styles.viewRectRed,{backgroundColor: this.state.cQAnswer.correct ? Colors.greenColor:Colors.redColor}]}>
-                                        <Icon name= {this.state.cQISTimeout ? 'hourglass-end': this.state.cQAnswer.correct ? 'check':'times'}  type="FontAwesome" style={{color:Colors.whiteColor,fontSize:25}}/>
+                                    <View style={[Styles.viewRectRed,{backgroundColor: this.state.cQAnswer.answer_correct ? Colors.greenColor:Colors.redColor}]}>
+                                        <Icon name= {this.state.cQISTimeout ? 'hourglass-end': this.state.cQAnswer.answer_correct ? 'check':'times'}  type="FontAwesome" style={{color:Colors.whiteColor,fontSize:25}}/>
                                     </View>
                                     <View style={Styles.viewRect}>
-                                        <Text style={Styles.textHint}>{this.state.cQISTimeout ? "TIME OUT" : this.state.cQAnswer.correct ? "GREAT!" :"NOT QUITE"}</Text>
+                                        <Text style={Styles.textHint}>{this.state.cQISTimeout ? "TIME OUT" : this.state.cQAnswer.answer_correct ? "GREAT!" :"NOT QUITE"}</Text>
                                     </View>
                                 </View>                      
                             
                                 <View style={Styles.viewExplainDetail}>
-                                    <HTML html={this.state.cQuestion.explain} imagesMaxWidth={Dimensions.get('window').width} />
+                                    <HTML html={this.state.cQuestion.explain ? this.state.cQuestion.explain : " "} imagesMaxWidth={Dimensions.get('window').width} />
 
                                 </View>
 
@@ -323,7 +323,7 @@ export default class TestPage extends Component {
                                 </View>
 
                                 <View style={Styles.viewExplainDetail}>
-                                    <HTML html={this.state.cQuestion.rule} imagesMaxWidth={Dimensions.get('window').width} />
+                                    <HTML html={this.state.cQuestion.rule ? this.state.cQuestion.rule : " "} imagesMaxWidth={Dimensions.get('window').width} />
                                 </View>
                             </View>
                         }

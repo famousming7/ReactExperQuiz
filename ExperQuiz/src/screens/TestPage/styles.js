@@ -80,6 +80,7 @@ export default {
         paddingLeft:60,
         paddingTop:10,
         paddingRight:10,
+        paddingBottom:10
     },
     textExplain:{
         fontSize:15,

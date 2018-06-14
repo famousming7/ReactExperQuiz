@@ -21,6 +21,7 @@ const emailAddress = "email_address"
 const userInfo = "user_info"
 const key_evaluationList = "evaluation_list"
 const PASSED_EVALUATIONS = "passed_evaluations"
+const POSTED_EVALUATIONS = "posted_evaluations"
 
 export async function getJSONwithCache(url, fromCached = false){
     if (fromCached) {
@@ -68,7 +69,7 @@ export async function postJSONwithFormData(url, formData) {
     try {
         let response = await fetch(url, {
             method: 'POST',
-            timeout: 5000,
+            timeout: 10000,
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'multipart/form-data',
@@ -144,10 +145,28 @@ export async function getEvalsListFromApi(){
 
         let newItems = await getJSONwithCache(url);
         let arrays =  await getEvalsArrayFrom(newItems)
-        AsyncStorage.setItem(key_evaluationList,JSON.stringify(arrays))
-
-        return arrays
+        
+        var evalsList = []
+        let evals = await AsyncStorage.getItem(key_evaluationList)
+        if (evals != null){
+            evalsList = JSON.parse(evals)
+            for (let oneObj of arrays){
+                evalsList.push(oneObj)
+            }
+        }
+        AsyncStorage.setItem(key_evaluationList,JSON.stringify(evalsList))
+        return evalsList
     }
+}
+
+export async function getEvalsListFromLocal(){
+
+    var evalsList = []
+    let evals = await AsyncStorage.getItem(key_evaluationList)
+    if (evals != null){
+        evalsList = JSON.parse(evals)
+    }
+    return evalsList
 }
 
 export async function getEvalsArrayFrom(obj){
@@ -186,9 +205,29 @@ export async function postAnswers(evalution_id,passed_questions, fromCached = fa
     let response =  await postJSON(url, postData);
 
     if (response != null && response.status =="ok"){
-        savePassedEvaluation(evalution_id,passed_questions)
+        savePostedEvalutionId(evalution_id)
     }
     return response
+}
+
+async function savePostedEvalutionId(evalution_id){
+    evalsList = []
+    let evals = await AsyncStorage.getItem(POSTED_EVALUATIONS)
+    if (evals != null){
+        evalsList = JSON.parse(evals)
+    }
+    evalsList.push(evalution_id)
+    AsyncStorage.setItem(POSTED_EVALUATIONS,JSON.stringify(evalsList))
+}
+
+export async function getPostedEvalutionIds(){
+
+    evalsList = []
+    let evals = await AsyncStorage.getItem(POSTED_EVALUATIONS)
+    if (evals != null){
+        evalsList = JSON.parse(evals)
+    }
+    return evalsList
 }
 
 export async function savePassedEvaluation(evalution_id,passed_questions) {
@@ -217,4 +256,31 @@ export async function getPassedEvaluations() {
     }
 
     return passedEvals
+}
+
+export async function postUnpostedAnswers(){
+
+    var passedEvals = []
+    let evals = await AsyncStorage.getItem(PASSED_EVALUATIONS)
+    if (evals != null){
+        passedEvals = JSON.parse(evals)
+    }
+    let postedIDs = await getPostedEvalutionIds()
+    for (let answer of passedEvals){
+        if(postedIDs.indexOf(answer.evaluation_id)  == -1){
+
+            await postAnswers(answer.evaluation_id,answer.passed_questions)
+        }
+    }
+}
+
+export async function deleteEval(evaluation_id){
+    var evalsList = await getEvalsListFromLocal()
+    var newList = []
+    for (let obj of evalsList){
+        if (obj.evaluation_id != evaluation_id){
+            newList.push(obj)
+        }
+    }
+    await AsyncStorage.setItem(key_evaluationList,JSON.stringify(newList))
 }

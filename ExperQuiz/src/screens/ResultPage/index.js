@@ -11,7 +11,9 @@ import { Button, Icon, Text} from 'native-base';
 import {Colors,Images} from '@theme';
 import { Loader,Strings } from '@components';
 import Styles from './styles';
-import { postAnswers} from "@api";
+import { postAnswers , savePassedEvaluation} from "@api";
+import GestureRecognizer, {swipeDirections} from 'react-native-swipe-gestures';
+
 const BackIcon = ({ navigate }) => {
     return (
         <Button  
@@ -86,6 +88,9 @@ export default class ResultPage extends Component {
                await this.postAnswer()
             }
         });
+        if (!this.state.is_onlyview) {
+            await savePassedEvaluation(this.state.evaluation_id,this.state.passed_questions)
+        }
     }
 
     componentWillUnmount() {
@@ -107,60 +112,81 @@ export default class ResultPage extends Component {
         return true;
     }
 
+    onSwipeLeft(gestureState) {
+       
+    }
+    
+    onSwipeRight(gestureState) {
+        this.props.navigation.navigate('Evallist',{'update':1})  
+    }
+
     render() {
+        const config = {
+            velocityThreshold: 0.3,
+            directionalOffsetThreshold: 80
+        };
 
         return (
-            <View style={Styles.container}>
-                <Loader loading={this.state.loaderVisible}/>
-                <View style={Styles.viewTop}>
-                    <Text style={Styles.textQuestion}>QUESTION</Text>
-                </View>
+            <GestureRecognizer
+                onSwipeLeft={(state) => this.onSwipeLeft(state)}
+                onSwipeRight={(state) => this.onSwipeRight(state)}
+                config={config}
+                style={{
+                    flex: 1,
+                }}
+                >
+                <View style={Styles.container}>
+                    <Loader loading={this.state.loaderVisible}/>
+                    <View style={Styles.viewTop}>
+                        <Text style={Styles.textQuestion}>QUESTION</Text>
+                    </View>
 
-                <View style={Styles.viewResult}>
-                    <View style={{marginTop:5}}>
-                        <Text style={Styles.textResultBig}>{this.state.passed_questions.length}</Text>
+                    <View style={Styles.viewResult}>
+                        <View style={{marginTop:5}}>
+                            <Text style={Styles.textResultBig}>{this.state.passed_questions.length}</Text>
+                        </View>
+                        <View style={{marginTop:0}}>
+                            <Text style={Styles.textResultSmall}>/{this.state.passed_questions.length}</Text>
+                        </View>
                     </View>
-                    <View style={{marginTop:0}}>
-                        <Text style={Styles.textResultSmall}>/{this.state.passed_questions.length}</Text>
-                    </View>
-                </View>
 
-                <View style={Styles.viewQuestion}>
-                    <Text style={Styles.textQuestion}>SCORE</Text>
-                </View>
+                    <View style={Styles.viewQuestion}>
+                        <Text style={Styles.textQuestion}>SCORE</Text>
+                    </View>
 
-                <View style={Styles.viewResult}>
-                    <View style={{marginTop:5}}>
-                        <Text style={Styles.textResultBig}>{this.state.score}</Text>
+                    <View style={Styles.viewResult}>
+                        <View style={{marginTop:5}}>
+                            <Text style={Styles.textResultBig}>{this.state.score}</Text>
+                        </View>
+                        <View style={{marginTop:0}}>
+                            <Text style={Styles.textResultSmall}>/{this.state.totalScore}</Text>
+                        </View>
                     </View>
-                    <View style={{marginTop:0}}>
-                        <Text style={Styles.textResultSmall}>/{this.state.totalScore}</Text>
-                    </View>
-                </View>
 
-                <View style={Styles.viewQuestion}>
-                    <Text style={Styles.textQuestion}>SUCCESS</Text>
-                </View>
-                <View style={Styles.viewResult}>
-                    <View style={{marginTop:5}}>
-                        <Text style={Styles.textResultBig}>{this.state.success}</Text>
+                    <View style={Styles.viewQuestion}>
+                        <Text style={Styles.textQuestion}>SUCCESS</Text>
                     </View>
-                    <View style={{marginTop:0}}>
-                        <Text style={Styles.textResultSmall}> %</Text>
+                    <View style={Styles.viewResult}>
+                        <View style={{marginTop:5}}>
+                            <Text style={Styles.textResultBig}>{this.state.success}</Text>
+                        </View>
+                        <View style={{marginTop:0}}>
+                            <Text style={Styles.textResultSmall}> %</Text>
+                        </View>
+                    </View>
+                    <View style={Styles.viewQuestion}>
+                        <Text style={Styles.textQuestion}>TIME SPENT</Text>
+                    </View>
+                    <View style={Styles.viewResult}>
+                        <View style={{marginTop:5}}>
+                            <Text style={Styles.textResultBig}>{this.state.timespent}</Text>
+                        </View>
+                        <View style={{marginTop:0}}>
+                            <Text style={Styles.textResultSmall}> SECS</Text>
+                        </View>
                     </View>
                 </View>
-                <View style={Styles.viewQuestion}>
-                    <Text style={Styles.textQuestion}>TIME SPENT</Text>
-                </View>
-                <View style={Styles.viewResult}>
-                    <View style={{marginTop:5}}>
-                        <Text style={Styles.textResultBig}>{this.state.timespent}</Text>
-                    </View>
-                    <View style={{marginTop:0}}>
-                        <Text style={Styles.textResultSmall}> SECS</Text>
-                    </View>
-                </View>
-            </View>
+            </GestureRecognizer>
         )
     }
 
